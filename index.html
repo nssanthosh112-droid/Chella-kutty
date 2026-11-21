@@ -1,0 +1,913 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#060b16"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="Chella Kutty">
+<link rel="manifest" href="manifest.json"><link rel="icon" href="icon-192.png"><link rel="apple-touch-icon" href="icon-192.png">
+<title>Chella Kutty – personal core brain</title>
+<style>
+:root{--bg:#060b16;--pan:#0d1626;--ln:#1d2a40;--cy:#38e1ff;--cy2:#0aa5c9;--gold:#ffc24a;--tx:#dbe7f5;--mu:#7f93ad;--red:#ff6b6b;--ok:#5be08f}
+*{box-sizing:border-box}html,body{margin:0;height:100%;background:var(--bg);color:var(--tx);font:15px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans Tamil",sans-serif}
+#app{display:flex;flex-direction:column;height:100%;max-width:1100px;margin:0 auto}
+header{display:flex;align-items:center;gap:12px;padding:10px 14px;border-bottom:1px solid var(--ln)}
+header h1{font-size:18px;margin:0;letter-spacing:.5px}header h1 b{color:var(--cy)}header small{color:var(--mu);display:block;font-size:12px}
+#core{width:64px;height:64px;flex:none}
+#state{margin-left:auto;font-size:12px;color:var(--mu);text-align:right}
+nav{display:flex;gap:4px;padding:6px 10px;overflow-x:auto;border-bottom:1px solid var(--ln)}
+nav button{background:none;border:1px solid var(--ln);color:var(--mu);padding:6px 12px;border-radius:18px;cursor:pointer;white-space:nowrap;font:inherit;font-size:13px}
+nav button.on{color:#001018;background:var(--cy);border-color:var(--cy)}
+main{flex:1;overflow:hidden;position:relative}
+section{position:absolute;inset:0;overflow:auto;padding:12px 14px;display:none}section.on{display:block}
+#talk{display:none;flex-direction:column;padding:0}#talk.on{display:flex}
+#log{flex:1;overflow:auto;padding:12px 14px}
+.m{max-width:88%;margin:6px 0;padding:9px 12px;border-radius:14px;white-space:pre-wrap;word-wrap:break-word}
+.u{margin-left:auto;background:#123049;border:1px solid #1c4a6e}.a{background:var(--pan);border:1px solid var(--ln)}
+.a .tag{font-size:11px;color:var(--cy);display:block;margin-bottom:2px}
+.a svg{max-width:100%;height:auto;background:#fff;border-radius:8px;margin-top:6px}
+.fix{font-size:11px;color:var(--mu);margin-top:4px}.fix a{color:var(--mu);cursor:pointer;text-decoration:underline}
+#bar{display:flex;gap:6px;padding:8px 10px;border-top:1px solid var(--ln);background:#08101d}
+#inp{flex:1;min-width:0;background:var(--pan);border:1px solid var(--ln);color:var(--tx);border-radius:22px;padding:10px 14px;font:inherit}
+.btn{background:var(--pan);border:1px solid var(--ln);color:var(--tx);border-radius:22px;padding:8px 14px;cursor:pointer;font:inherit}
+.btn.p{background:var(--cy);color:#001018;border-color:var(--cy);font-weight:600}.btn.live{background:var(--red);border-color:var(--red);color:#fff}
+.card{background:var(--pan);border:1px solid var(--ln);border-radius:12px;padding:12px;margin:0 0 10px}
+.card h3{margin:0 0 6px;font-size:15px;color:var(--cy)}
+.row{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin:6px 0}
+input[type=text],input[type=password],input[type=number],select,textarea{background:#0a1220;border:1px solid var(--ln);color:var(--tx);border-radius:8px;padding:7px 9px;font:inherit}
+textarea{width:100%;min-height:70px}
+.it{display:flex;gap:8px;align-items:flex-start;padding:7px 0;border-bottom:1px solid var(--ln)}.it:last-child{border:0}
+.it .x{margin-left:auto;cursor:pointer;color:var(--mu)}
+.done{text-decoration:line-through;color:var(--mu)}
+.pill{font-size:11px;padding:2px 8px;border-radius:10px;border:1px solid var(--ln);color:var(--mu)}
+.v-imp{color:var(--red);border-color:var(--red)}.v-not{color:var(--gold);border-color:var(--gold)}.v-pos{color:var(--ok);border-color:var(--ok)}
+.mu{color:var(--mu);font-size:13px}
+.q button{display:block;width:100%;text-align:left;margin:4px 0}
+.ok{color:var(--ok)}.bad{color:var(--red)}
+@media (max-width:700px){header{padding:8px 10px}header h1{font-size:16px}header small{display:none}#core{width:48px;height:48px}#state{font-size:11px}
+ nav{position:sticky;top:0;background:var(--bg);z-index:5}nav button{padding:8px 12px}.btn{min-height:40px}section{padding:10px}.card{padding:10px}.m{max-width:94%}}
+input,select,textarea{font-size:16px}  /* stops phones zooming the page when typing */
+html,body{overscroll-behavior:none;-webkit-tap-highlight-color:transparent}#bar{padding-bottom:calc(8px + env(safe-area-inset-bottom))}header{padding-top:calc(10px + env(safe-area-inset-top))}
+#install{display:none}
+</style>
+</head>
+<body>
+<div id="app">
+<header>
+  <canvas id="core" width="128" height="128"></canvas>
+  <div><h1><b>Chella Kutty</b> · செல்லக்குட்டி</h1><small>Your personal core brain – hears, speaks, remembers, teaches, invents</small></div>
+  <button class="btn" id="install" title="Install on this phone">📲 Install</button><div id="state">small brain: on device<br><span id="bigst">big brain: off</span></div>
+</header>
+<nav id="tabs">
+  <button data-t="talk" class="on">🗣 Talk</button><button data-t="tasks">✅ Tasks</button><button data-t="mem">🧠 Memory</button>
+  <button data-t="teach">🎓 Teacher</button><button data-t="mind">🌌 Mind</button><button data-t="wave">🌊 Waves</button><button data-t="pred">🔮 Predict</button><button data-t="inv">💡 Inventions</button><button data-t="brain">⚙ Brain</button>
+</nav>
+<main>
+<section id="talk" class="on">
+  <div id="log"></div>
+  <div id="bar">
+    <button class="btn" id="mic" title="Speak">🎤</button>
+    <input id="inp" placeholder="Talk to Chella Kutty… (Tamil or English)" autocomplete="off">
+    <button class="btn p" id="send">Send</button>
+  </div>
+</section>
+<section id="tasks">
+  <div class="card"><h3>✅ Tasks & reminders</h3>
+    <div class="row"><input type="text" id="tnew" placeholder="New task" style="flex:1"><input type="text" id="twhen" placeholder="when (e.g. 6 pm, in 20 min)" style="width:190px"><button class="btn p" id="tadd">Add</button></div>
+    <div id="tlist"></div></div>
+  <div class="card"><h3>🎯 Goals</h3><div class="row"><input type="text" id="gnew" placeholder="A big goal (e.g. clear UPSC prelims 2027)" style="flex:1"><button class="btn" id="gadd">Add goal</button></div><div id="glist"></div></div>
+</section>
+<section id="mem">
+  <div class="card"><h3>🧠 What I remember about you</h3><div class="row"><input type="text" id="mnew" placeholder="Tell me a fact to remember" style="flex:1"><button class="btn p" id="madd">Remember</button></div>
+    <div class="row"><input type="text" id="msearch" placeholder="Search memory" style="flex:1"></div><div id="mlist"></div></div>
+  <div class="card"><h3>📄 Read a document into my knowledge</h3><p class="mu">Text, notes, CSV, HTML or KML files. I split them into pieces and can answer from them – even offline.</p>
+    <label class="mu" style="display:block;margin:4px 0"><input type="checkbox" id="asrecipe" checked> 📜 Learn as recipe (Know & Create): keep the gist + exact numbers, dates, names – not the full text. Uses far less space; I recreate it when you ask.</label><input type="file" id="docf" multiple accept=".txt,.md,.csv,.html,.htm,.kml,.json"><div id="dlist"></div></div>
+</section>
+<section id="teach">
+  <div class="card"><h3>🎓 Teach me (UPSC and anything)</h3>
+    <div class="row"><input type="text" id="topic" placeholder="Topic, e.g. Article 21, monsoon, land acquisition act" style="flex:1"><button class="btn p" id="texp">Explain like a movie scene</button><button class="btn" id="tquiz">Quiz me</button></div>
+    <div id="tout"></div></div>
+  <div class="card"><h3>📜 Tamil wisdom – Thirukkural & heritage</h3><div class="mu" id="kstat"></div>
+    <div class="row"><button class="btn p" id="kdl">⬇ Download full Thirukkural</button><label class="btn">📂 Load file (Project Madurai .html / .json)<input type="file" id="kfile" accept=".html,.htm,.json,.txt" hidden></label></div><div id="kout" class="mu"></div>
+    <div class="row"><input type="text" id="kq" placeholder="குறள் number (1–1330) or a word, e.g. 391 / கல்வி / learning" style="flex:1"><button class="btn" id="kgo">Find</button></div>
+    <div id="kres" style="white-space:pre-wrap"></div><p class="mu" style="margin-bottom:2px">Kural of the day:</p><div id="kday" style="white-space:pre-wrap"></div>
+    <h3 style="font-size:13px;margin-top:10px">Ancient Tamil technology & classics</h3><div id="hcards"></div><button class="btn" id="hcard">🃏 Add these as UPSC revision cards</button></div>
+  <div class="card"><h3>🃏 Revision cards (spaced repetition)</h3><p class="mu">Cards come back just before you would forget them.</p>
+    <div class="row"><input type="text" id="cq" placeholder="Question" style="flex:1"><input type="text" id="ca" placeholder="Answer" style="flex:1"><button class="btn" id="cadd">Add card</button></div>
+    <div class="row"><button class="btn p" id="crev">Revise due cards</button><span class="mu" id="cdue"></span></div><div id="cbox"></div></div>
+</section>
+<section id="mind">
+  <div class="card"><h3>🌌 Brain-style memory (quantum-inspired)</h3>
+    <p class="mu"><b>Understand</b>: every sentence becomes concepts + links (plot —in→ Thanjavur). <b>Grow</b>: each concept gets a 4096-bit code grown from its name – stored nowhere, regrown when needed (a recipe, not a plate). <b>Entangle</b>: links are codes woven together (XOR). <b>Superpose</b>: all links of one concept live in ONE code. <b>Collapse</b>: a question unweaves the code and it falls onto the nearest real concept; the match strength is my confidence. <b>Surprise</b>: repeats only strengthen; changes are flagged. <b>Sleep</b>: unused links fade, repeats merge, the concept web grows. ⭐ = never fade.</p>
+    <div class="row"><input type="text" id="mteach" placeholder="Teach: e.g. my plot is 38 in Thanjavur" style="flex:1"><button class="btn p" id="mteachb">Understand & store</button></div>
+    <div class="row"><input type="text" id="mask" placeholder="Ask: where is my plot? / tell me about amma / what is in Thanjavur?" style="flex:1"><button class="btn" id="maskb">Recall</button></div>
+    <div id="mout" class="mu"></div>
+    <div class="row"><button class="btn" id="msleep">😴 Sleep now (consolidate)</button></div>
+    <div class="mu" id="mstat"></div></div>
+  <div class="card"><h3>🎭 Thinking stage (working memory – 4 slots)</h3><p class="mu">What I am holding in mind right now. New thoughts push the oldest off – like your own stage. Because of it you can ask “where is it?” and I know what “it” is.</p><div id="mstage" style="display:flex;gap:6px"></div></div>
+  <div class="card"><h3>🎬 Scenes (episodes)</h3><p class="mu">Your days cut into scenes. A scene is kept only when something changed or a feeling was shared – size grows with surprise, not time. Ask “what did we do today?”.</p><div id="mscenes"></div></div>
+  <div class="card"><h3>✨ Imagination</h3><p class="mu">Recombines two things I remember into a new “what if” – invention is memory rearranged. Ideas go to the 💡 notebook.</p><div class="row"><input type="text" id="imgq" placeholder="optional: plot and solar panel" style="flex:1"><button class="btn p" id="imgb">Imagine</button></div><div id="imgout" class="mu" style="white-space:pre-wrap"></div></div>
+  <div class="card"><h3>⚖ Two-faced knife (balance dials)</h3><p class="mu">Every power cuts both ways. Set where I stand on each – a precise question (numbers, survey, law, money) automatically turns me to the careful edge for that answer.</p><div id="dials"></div></div>
+  <div class="card"><h3>📜 Know & Create (recipe memory)</h3><p class="mu">Like knowing a movie instead of saving the video: I keep the gist, the key concepts and the EXACT anchors (numbers, dates, article numbers, names), and recreate the full thing when you ask – then check every anchor came back unchanged.</p><div class="mu" id="rstat"></div><div id="rlist"></div></div>
+  <div class="card"><h3>🛡 Caution (the fear layer)</h3><p class="mu">Before I lose anything I ask myself: if I am wrong, how bad is it? caution = harm × how unsure × how permanent × whose it is × habit. Small risks: I act and tell you. Big ones: I ask. Every delete waits 30 days in the bin. Your answers teach me what you always keep or remove.</p>
+    <div id="chab"></div><div id="clog" class="mu" style="white-space:pre-wrap;margin:6px 0"></div><h3 style="font-size:13px">🗑 Recycle bin</h3><div id="cbin"></div></div>
+  <div class="card"><h3>🕸 Concept web</h3><div id="mweb"></div></div>
+  <div class="card"><h3>🔗 Links in memory</h3><div id="mfacts"></div></div>
+</section>
+<section id="wave">
+  <div class="card"><h3>🔊 Sound wave designer</h3><p class="mu">Sound is air being pushed and pulled – a pressure wave. Choose how many pushes per second (frequency) and the wave's shape, then hear it. Volume is capped to protect your ears.</p>
+    <canvas id="wcv" width="640" height="150" style="width:100%;background:#0a1220;border-radius:10px"></canvas>
+    <div class="row">Frequency <input type="range" id="wf" min="20" max="2000" value="440" style="flex:1"><input type="number" id="wfn" value="440" min="1" max="20000" style="width:80px"> Hz</div>
+    <div class="row">Shape <select id="wtype"><option value="sine">smooth (sine)</option><option value="square">square</option><option value="triangle">triangle</option><option value="sawtooth">sawtooth</option></select> Volume <input type="range" id="wvol" min="1" max="30" value="12" style="width:90px"></div>
+    <div class="row"><label><input type="checkbox" id="wbeat"> add a 2nd wave (interference)</label> <input type="number" id="wf2" value="444" style="width:80px"> Hz</div>
+    <div class="row"><button class="btn p" id="wplay">▶ Play</button><button class="btn" id="wstop">⏹ Stop</button><button class="btn" data-pre="40">🔥 40 Hz bass</button><button class="btn" data-pre="440">🎵 440 Hz (A)</button><button class="btn" data-pre="beat">〰 beats</button></div>
+    <div id="winfo" class="mu" style="white-space:pre-wrap"></div></div>
+  <div class="card"><h3>👂 Chella Kutty hears waves</h3><p class="mu">Turns on the microphone and shows which pitches are in the sound – hum, whistle or play a note.</p><button class="btn p" id="wmic">👂 Let Chella Kutty hear</button><div id="wheard" class="mu" style="margin:6px 0"></div><canvas id="wspec" width="640" height="110" style="width:100%;background:#0a1220;border-radius:10px"></canvas></div>
+  <div class="card"><h3>🌈 Light wave designer</h3><p class="mu">Light is an electric-magnetic wave – no air needed. Its wavelength decides its colour.</p>
+    <canvas id="lcv" width="640" height="120" style="width:100%;background:#0a1220;border-radius:10px"></canvas>
+    <div class="row">Wavelength <input type="range" id="lnm" min="200" max="1100" value="550" style="flex:1"><span id="lsw" style="width:36px;height:24px;border-radius:6px;display:inline-block"></span></div>
+    <div id="linfo" class="mu" style="white-space:pre-wrap"></div></div>
+  <div class="card"><h3>🧘 Vasi breath wave (sound + light together)</h3><p class="mu">Follow the glowing light and the soft tone: they rise as you breathe in and fall as you breathe out. Inspired by Thirumoolar’s breath verses; the default (6 a minute, longer out-breath) is the rhythm modern studies find most relaxing.</p>
+    <canvas id="bcv" width="640" height="220" style="width:100%;background:#0a1220;border-radius:10px"></canvas>
+    <div class="row">Breaths/min <input type="number" id="bbpm" value="6" min="3" max="12" step="0.5" style="width:60px"> out÷in <input type="number" id="bratio" value="1.5" min="1" max="2" step="0.25" style="width:60px"> minutes <input type="number" id="bmin" value="5" min="1" max="30" style="width:55px"> tone <input type="number" id="btone" value="136" min="60" max="400" style="width:60px"> Hz <label><input type="checkbox" id="bsound" checked> sound</label></div>
+    <div class="row"><button class="btn p" id="bgo">▶ Start breathing</button><span class="mu" id="binfo"></span></div><p class="mu" style="font-size:11px">Stop if you feel dizzy. Not a medical treatment.</p></div>
+  <div class="card"><h3>🎵 Nadam practice (chant feedback)</h3><p class="mu">Chant ஓம் / Om (or any steady tone). Chella Kutty measures your pitch, how steady it stays, and your longest unbroken tone – and remembers your progress.</p><button class="btn p" id="ngo">🎵 Start nadam practice</button><div id="ninfo" class="mu" style="white-space:pre-wrap;margin-top:6px"></div></div>
+  <div class="card"><h3>📜 Siddhar ideas behind these waves</h3><div id="scards"></div></div>
+  <div class="card"><h3>⚖ Sound vs light</h3><table style="width:100%;font-size:13px;border-collapse:collapse"><tr class="mu"><td></td><td>🔊 Sound</td><td>🌈 Light</td></tr><tr><td>What waves</td><td>Air pressure (push–pull along the path)</td><td>Electric + magnetic field (side-to-side)</td></tr><tr><td>Speed</td><td>343 m/s in air</td><td>299,792 km/s</td></tr><tr><td>Needs a medium?</td><td>Yes – silent in space</td><td>No – crosses empty space</td></tr><tr><td>Human range</td><td>20–20,000 Hz</td><td>380–750 nm (violet–red)</td></tr><tr><td>Both show</td><td colspan="2">interference, resonance, reflection, frequency, wavelength</td></tr></table></div>
+</section>
+<section id="pred">
+  <div class="card"><h3>🔮 Prediction – many sources, judged by results</h3><p class="mu">Every source is labelled for what kind of knowledge it is. Predictions are saved with a date; when the date passes I ask if it came true, and each source earns (or loses) trust by its record.</p>
+    <div class="row"><input type="text" id="pplace" placeholder="Your place, e.g. a town name" style="flex:1"><button class="btn" id="pplaceb">Set place</button><button class="btn" id="pgeo">📍 my location</button></div><div class="mu" id="pplacet"></div></div>
+  <div class="card"><h3>🪔 Panchangam (astronomy + tradition)</h3><div class="row"><input type="date" id="pdate"><button class="btn p" id="ppan">Show</button></div><div id="pout" style="white-space:pre-wrap"></div></div>
+  <div class="card"><h3>🔬 Weather (physics forecast)</h3><button class="btn p" id="pwx">4-day forecast</button><div id="pwxo" class="mu" style="white-space:pre-wrap;margin-top:6px"></div></div>
+  <div class="card"><h3>📝 Make a prediction</h3><div class="row"><input type="text" id="ptext" placeholder="e.g. It will rain in my village tomorrow" style="flex:1"></div>
+    <div class="row"><select id="psrc"></select> sure <input type="number" id="pconf" value="60" min="1" max="99" style="width:70px">% by <input type="date" id="pdue"><button class="btn p" id="padd">Save</button></div><div id="plist"></div></div>
+  <div class="card"><h3>🏆 Track record of each source</h3><div id="pscore"></div></div>
+</section>
+<section id="inv">
+  <div class="card"><h3>💡 Invention engine</h3>
+    <p class="mu">Your own method: <b>Gather → Feel → Doubt → Disprove → Prove → Act → Explain → Learn</b>. First a physics gate separates <span class="pill v-imp">truly impossible</span> from <span class="pill v-not">not yet possible</span> and <span class="pill v-pos">possible</span>; then inventive principles give idea sparks.</p>
+    <div class="row"><input type="text" id="iprob" placeholder="Problem or dream, e.g. time travel, find land boundary without a surveyor" style="flex:1"><button class="btn p" id="igo">Think</button></div>
+    <div id="iout"></div></div>
+  <div class="card"><h3>⏱ Time-travel calculator (real physics)</h3><p class="mu">Travelling fast makes your clock run slow – this is forward time travel, proven with GPS satellites and atomic clocks.</p>
+    <div class="row">Speed <input type="number" id="tv" value="90" min="0" max="99.9999" step="any" style="width:100px">% of light, for <input type="number" id="tt" value="1" min="0" step="any" style="width:80px"> year(s) on your clock <button class="btn" id="tcalc">Calculate</button></div><div id="tres"></div></div>
+  <div class="card"><h3>📓 Idea notebook</h3><div id="ilist"></div></div>
+</section>
+<section id="brain">
+  <div class="card"><h3>⚡ Big brain (optional)</h3>
+    <p class="mu">For hard questions, teaching with pictures and inventing, Chella Kutty can call a large AI with your own Anthropic API key. The key stays only in this browser. Without it, everything still works with the small brain on your device.</p>
+    <div class="row"><input type="password" id="key" placeholder="sk-ant-… API key" style="flex:1"><select id="model"><option value="claude-sonnet-5-5">Sonnet 5.5 (balanced)</option><option value="claude-haiku-5-5">Haiku 5.5 (fast, cheap)</option><option value="claude-opus-5-5">Opus 5.5 (strongest)</option></select><button class="btn p" id="ksave">Save</button><button class="btn" id="kdel">Remove key</button></div></div>
+  <div class="card"><h3>🧬 Offline brain – three-letter language (BitNet)</h3>
+    <p class="mu">A real thinking brain that lives <b>inside your laptop</b>, no internet or key needed after one download. Every connection in it is written with only three letters: <b>−1, 0, +1</b> (Microsoft BitNet b1.58, 2 billion connections) – about 10× smaller than normal AI brains. Needs Chrome/Edge with WebGPU and about 1.5 GB of graphics memory. Download about 1 GB, once; after that it loads from this browser's storage. It is clever in English, weak in Tamil, and much weaker than the online big brain.</p>
+    <div class="row"><button class="btn" id="lcheck">1. Check my laptop</button><button class="btn p" id="lload">2. Download & wake the offline brain</button><button class="btn" id="loff">Sleep</button></div>
+    <div id="lstat" class="mu">Offline brain: sleeping</div></div>
+  <div class="card"><h3>🗣 Voice</h3><div class="row"><label><input type="checkbox" id="speak" checked> Speak answers</label>
+    Listen in <select id="lang"><option value="en-IN">English (India)</option><option value="ta-IN">தமிழ்</option></select>
+    <label><input type="checkbox" id="wake"> Always listen for “Chella Kutty”</label></div><p class="mu">Hearing uses Chrome's speech service (needs internet). Speaking works offline if your device has the voices.</p></div>
+  <div class="card"><h3>🧬 Small brain (on-device neural network)</h3><div id="nstat" class="mu"></div>
+    <p class="mu">It decides what you mean (remember, task, reminder, teach, quiz, open app, invent, calculate…). When it guesses wrong, tap “wrong?” under my answer and pick the right meaning – it retrains itself at once.</p>
+    <button class="btn" id="nretrain">Retrain now</button></div>
+  <div class="card"><h3>🧬 Reproduce & evolve (self-upgrade)</h3><p class="mu">I copy my own brain DNA, let the copies vary (🧫 clone + mutation) and mix the two best (💞 crossover), then every child sits the same exam: 36 test sentences + a quiz on my own memories. The best child replaces me only if it scores higher and you approve. You can always go back to an ancestor.</p>
+    <div class="mu" id="fgen"></div><div class="row">Generations <input type="number" id="fgens" value="2" min="1" max="6" style="width:55px"> children each <input type="number" id="fpop" value="4" min="2" max="8" style="width:55px"><button class="btn p" id="fgo">🧬 Reproduce</button></div>
+    <div id="flog" class="mu" style="white-space:pre-wrap;max-height:220px;overflow:auto"></div><h3 style="font-size:13px">Family tree</h3><div id="ftree"></div></div>
+  <div class="card"><h3>💾 Backup</h3><div class="row"><button class="btn" id="bexp">⬇ Save my brain (file)</button><label class="btn">⬆ Load brain file<input type="file" id="bimp" accept=".json" hidden></label><button class="btn" id="bwipe">Erase everything</button></div></div>
+</section>
+</main>
+</div>
+<script>
+'use strict';
+/* ================= STORAGE ================= */
+const KEY='nsk_arivu_v1';
+const S=Object.assign({facts:[],tasks:[],goals:[],docs:[],cards:[],ideas:[],examples:[],chat:[],name:''},JSON.parse(localStorage.getItem(KEY)||'{}'));
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){say('⚠ Memory is full – save a backup and remove old documents.')}};
+const $=id=>document.getElementById(id), esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+const isTa=t=>/[஀-௿]/.test(t);
+
+/* ================= CORE ANIMATION ================= */
+const cv=$('core'),cg=cv.getContext('2d');let mood='idle',t0=0;
+function drawCore(t){t0=t/1000;const c=64,g=cg;g.clearRect(0,0,128,128);
+  const pulse=mood==='listen'?1+0.15*Math.sin(t0*10):mood==='speak'?1+0.1*Math.sin(t0*16):mood==='think'?1+0.05*Math.sin(t0*6):1+0.03*Math.sin(t0*2);
+  const col=mood==='listen'?'255,107,107':mood==='think'?'255,194,74':'56,225,255';
+  const gr=g.createRadialGradient(c,c,4,c,c,60*pulse);gr.addColorStop(0,`rgba(${col},.95)`);gr.addColorStop(.35,`rgba(${col},.35)`);gr.addColorStop(1,'rgba(0,0,0,0)');g.fillStyle=gr;g.beginPath();g.arc(c,c,60,0,7);g.fill();
+  g.lineWidth=3;g.strokeStyle=`rgba(${col},.9)`;g.beginPath();g.arc(c,c,40*pulse,0,7);g.stroke();
+  for(let i=0;i<10;i++){const a=i*Math.PI/5+t0*(mood==='think'?2:.4);g.save();g.translate(c,c);g.rotate(a);g.fillStyle=`rgba(${col},.8)`;g.fillRect(28,-3,10,6);g.restore();}
+  g.fillStyle='#fff';g.beginPath();g.arc(c,c,12*pulse,0,7);g.fill();requestAnimationFrame(drawCore);}
+requestAnimationFrame(drawCore);
+
+/* ================= TEXT TOOLS (shared by memory + neural net) ================= */
+const STOP=new Set('a an the is are am was were be to of in on at for and or my me i you your it this that what which who how do does did can please tell about with from as by'.split(' '));
+const words=t=>String(t).toLowerCase().replace(/[^\p{L}\p{N}\s.]/gu,' ').split(/\s+/).filter(Boolean);
+const toks=t=>words(t).filter(w=>!STOP.has(w));
+function tfidfSearch(q,items,get,k=3){const qt=toks(q);if(!qt.length||!items.length)return[];const df={};const docs=items.map(it=>{const w=toks(get(it));new Set(w).forEach(x=>df[x]=(df[x]||0)+1);return w;});
+  const N=items.length;return items.map((it,i)=>{const w=docs[i];let s=0;qt.forEach(x=>{const tf=w.filter(y=>y===x||(x.length>3&&y.startsWith(x.slice(0,-1)))).length;if(tf)s+=(1+Math.log(tf))*Math.log(1+N/(df[x]||1));});return{it,s:s/Math.sqrt(1+w.length/12)};}).filter(r=>r.s>0).sort((a,b)=>b.s-a.s).slice(0,k);}
+
+/* ================= SMALL BRAIN: on-device neural network (intent) ================= */
+const BASE={
+ remember:['remember that my plot is in thanjavur','remember my wife birthday is in may','note that i parked on level 2','save this my bike number','நினைவில் வை என் வீடு தஞ்சாவூர்','keep in mind i like filter coffee','remember i have exam on june'],
+ recall:['what is my plot number','where did i park','do you remember my birthday','what do you know about me','when is my exam','என் வீடு எங்கே','tell me what i said about my house','who is my wife'],
+ task_add:['add task buy cement','i need to call the surveyor','todo submit form','add to my list pay electricity bill','new task study polity','வேலை சேர் சிமெண்ட் வாங்க'],
+ task_list:['what are my tasks','show my todo list','what should i do today','today plan','my pending work','இன்று என்ன வேலை'],
+ remind:['remind me at 6 pm to call amma','remind me in 10 minutes to drink water','set reminder tomorrow 7 am study','wake me at 5','alert me in 1 hour','நினைவூட்டு 6 மணிக்கு'],
+ teach:['teach me article 21','explain monsoon','what is land acquisition act','explain like a movie fundamental rights','how does gps work','why is sky blue','விளக்கு சோழர் வரலாறு','what is photosynthesis','tell me about indian constitution'],
+ quiz:['quiz me on polity','test me on geography','ask me questions on history','give me mcq on economy','வினாடி வினா'],
+ revise:['revise my cards','flashcards','revision time','show due cards'],
+ open:['open nsk kml measure','open tngis','open youtube','search indian kanoon land acquisition','open wikipedia','play music on youtube','open google maps'],
+ invent:['invent a way to time travel','is time travel possible','give me a new idea for','how can i invent','discover something new','can we teleport','idea to solve water shortage','கண்டுபிடி'],
+ calc:['what is 25 times 4','calculate 1200 divided by 3','convert 5 acres to cents','how many sq ft in 3 cents','10 percent of 4500','square root of 144'],
+ time:['what time is it','today date','what day is today','நேரம் என்ன'],
+ greet:['hello','hi chella kutty','hello kutty','good morning','vanakkam','how are you','வணக்கம்','thank you','thanks'],
+ chat:['tell me a joke','i am feeling tired','what do you think about life','motivate me','i am bored','talk to me']};
+const INTENTS=Object.keys(BASE),HD=256;
+const GENE_DEF={hid:[12,48,1],ep:[60,240,10],lr:[0.08,0.5,0.01],tri:[0,0.8,0.05],bi:[0,1.2,0.05],match:[0.3,0.75,0.05]};   /* the DNA of the small brain: [min,max,step] */
+S.genome=Object.assign({hid:28,ep:160,lr:0.3,tri:0.3,bi:0.7,match:0.5,gen:0,id:'adam'},S.genome||{});
+function feat(t,G){G=G||S.genome;const v=new Float32Array(HD),w=words(t),h=(s)=>{let x=2166136261;for(let i=0;i<s.length;i++){x^=s.charCodeAt(i);x=Math.imul(x,16777619);}return(x>>>0)%HD;};
+  w.forEach(x=>{v[h('w:'+x)]+=1;const p='#'+x+'#';for(let i=0;i<p.length-2;i++)v[h('c:'+p.substr(i,3))]+=G.tri;});for(let i=0;i+1<w.length;i++)v[h('b:'+w[i]+' '+w[i+1])]+=G.bi;
+  let n=Math.sqrt(v.reduce((s,x)=>s+x*x,0))||1;for(let i=0;i<HD;i++)v[i]/=n;return v;}
+let NET=null;
+let RNG=Math.random;const seeded=seed=>()=>{seed|=0;seed=seed+0x6D2B79F5|0;let t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};
+function rnd(n,s){const a=new Float32Array(n);for(let i=0;i<n;i++)a[i]=(RNG()*2-1)*s;return a;}
+function netRun(x,net){net=net||NET;const H=net.hid,h=new Float32Array(H);for(let j=0;j<H;j++){let s=net.b1[j];for(let i=0;i<HD;i++)if(x[i])s+=x[i]*net.W1[i*H+j];h[j]=s>0?s:0;}
+  const O=INTENTS.length,z=new Float32Array(O);let m=-1e9;for(let o=0;o<O;o++){let s=net.b2[o];for(let j=0;j<H;j++)s+=h[j]*net.W2[j*O+o];z[o]=s;m=Math.max(m,s);}let su=0;for(let o=0;o<O;o++){z[o]=Math.exp(z[o]-m);su+=z[o];}for(let o=0;o<O;o++)z[o]/=su;return{h,p:z};}
+function trainNet(G,extra){const O=INTENTS.length,H=Math.round(G.hid),net={hid:H,W1:rnd(HD*H,0.15),b1:new Float32Array(H),W2:rnd(H*O,0.3),b2:new Float32Array(O)};
+  const data=[];INTENTS.forEach((k,o)=>BASE[k].forEach(t=>data.push([feat(t,G),o])));(extra||S.examples).forEach(e=>{const o=INTENTS.indexOf(e.i);if(o>=0)for(let r=0;r<3;r++)data.push([feat(e.t,G),o]);});
+  let lr=G.lr;for(let ep=0;ep<Math.round(G.ep);ep++){for(let n=data.length-1;n>0;n--){const r=Math.floor(RNG()*(n+1));[data[n],data[r]]=[data[r],data[n]];}
+    for(const[x,y]of data){const{h,p}=netRun(x,net);const d2=Array.from(p);d2[y]-=1;const dh=new Float32Array(H);
+      for(let j=0;j<H;j++){for(let o=0;o<O;o++){dh[j]+=d2[o]*net.W2[j*O+o];net.W2[j*O+o]-=lr*d2[o]*h[j];}if(h[j]<=0)dh[j]=0;}for(let o=0;o<O;o++)net.b2[o]-=lr*d2[o];
+      for(let i=0;i<HD;i++)if(x[i])for(let j=0;j<H;j++)net.W1[i*H+j]-=lr*dh[j]*x[i];for(let j=0;j<H;j++)net.b1[j]-=lr*dh[j];}lr*=0.98;}
+  let ok=0;data.forEach(([x,y])=>{const p=netRun(x,net).p;if(p.indexOf(Math.max(...p))===y)ok++;});net.self=ok/data.length;net.n=data.length;return net;}
+function train(){NET=trainNet(S.genome);const O=INTENTS.length,H=NET.hid;
+  if($('nstat'))$('nstat').textContent=`Neurons: ${HD} inputs → ${H} hidden → ${O} meanings · ${(HD*H+H*O+H+O).toLocaleString()} connections · learnt from ${NET.n} examples (${S.examples.length} taught by you) · self-test ${Math.round(100*NET.self)}% · DNA generation ${S.genome.gen} (${S.genome.id})`;}
+function intentOf(t){const s=t.toLowerCase();
+  if(/^(remember|note|save|நினைவில்)/.test(s)||(/\b(remember|நினைவில் வை)\b/.test(s)&&!/\?|do you remember|did i|what did/.test(s)))return['remember',1];if(/remind|நினைவூட்டு|alert me|wake me/.test(s))return['remind',1];
+  if(/^[\d\s.+\-*/()x×%^]+$/.test(s.trim())&&/\d/.test(s))return['calc',1];
+  const p=netRun(feat(t)).p;let b=0;for(let i=1;i<p.length;i++)if(p[i]>p[b])b=i;return[INTENTS[b],p[b]];}
+
+/* ================= VOICE ================= */
+let voices=[];const loadV=()=>voices=speechSynthesis?speechSynthesis.getVoices():[];if(window.speechSynthesis){loadV();speechSynthesis.onvoiceschanged=loadV;}
+function speak(text){if(!$('speak').checked||!window.speechSynthesis)return;const clean=String(text).replace(/<[^>]+>/g,' ').replace(/[*#_`]/g,'').slice(0,600);if(!clean.trim())return;
+  speechSynthesis.cancel();const ta=isTa(clean),u=new SpeechSynthesisUtterance(clean);u.lang=ta?'ta-IN':'en-IN';const v=voices.find(v=>v.lang===(ta?'ta-IN':'en-IN'))||voices.find(v=>v.lang.startsWith(ta?'ta':'en'));if(v)u.voice=v;u.rate=1;
+  u.onstart=()=>mood='speak';u.onend=()=>mood='idle';speechSynthesis.speak(u);}
+const SR=window.SpeechRecognition||window.webkitSpeechRecognition;let rec=null,listening=false;
+function listen(){if(!SR){say('Hearing needs Chrome (laptop or Android). You can type instead.');return;}if(listening){rec.stop();return;}
+  rec=new SR();rec.lang=$('lang').value;rec.interimResults=true;rec.continuous=$('wake').checked;listening=true;mood='listen';$('mic').classList.add('live');
+  rec.onresult=e=>{let fin='',tmp='';for(let i=e.resultIndex;i<e.results.length;i++){const r=e.results[i];if(r.isFinal)fin+=r[0].transcript;else tmp+=r[0].transcript;}
+    $('inp').value=fin||tmp;if(fin){let q=fin.trim();if($('wake').checked){const m=q.match(/(?:chella\s*kutty|chellakutty|kutty|செல்லக்குட்டி|குட்டி)[,\s]*(.*)/i);if(!m)return;q=m[1]||'';if(!q){speak('Yes?');return;}}$('inp').value='';handle(q);}};
+  rec.onerror=e=>{if(e.error!=='no-speech')say('🎤 '+(e.error==='not-allowed'?'Microphone permission was refused – allow it in Chrome’s address bar.':'Hearing problem: '+e.error));};
+  rec.onend=()=>{listening=false;mood='idle';$('mic').classList.remove('live');if($('wake').checked&&!stopWake)setTimeout(listen,400);};rec.start();}
+let stopWake=false;
+
+/* ================= BIG BRAIN (optional) ================= */
+const bigKey=()=>localStorage.getItem('nsk_arivu_key')||'';
+function bigStatus(){$('bigst').textContent='big brain: '+(bigKey()?'online ('+(localStorage.getItem('nsk_arivu_model')||'claude-sonnet-5-5')+')':typeof LOCAL!=='undefined'&&LOCAL.model?'offline BitNet awake':'off');}
+async function big(prompt,sys,max=1500){const k=bigKey();if(!k&&!LOCAL.model)return null;if(D('depth')<0.25)return null;   /* speed edge: answer with the small brain */
+ mood='think';
+  const facts=tfidfSearch(prompt,S.facts,f=>f.t,6).map(r=>'- '+r.it.t).join('\n'),docs=tfidfSearch(prompt,S.docs,d=>d.t,3).map(r=>'['+r.it.src+'] '+r.it.t.slice(0,700)).join('\n');
+  const system=(sys||'You are Chella Kutty (செல்லக்குட்டி), a warm, honest personal assistant for the user (N Santhosh Kumar, Tamil Nadu). He is a slow learner who remembers movie scenes: explain simply, with a vivid scene or picture-like example. Reply in the language he used (Tamil or English). Be honest about what is known and unknown; never invent facts.')+(facts?'\n\nWhat you remember about him:\n'+facts:'')+(docs?'\n\nFrom his documents:\n'+docs:'');
+  const raw=S.chat.slice(-8);if(raw.length&&raw[raw.length-1].r==='u')raw.pop();const hist=[];raw.forEach(m=>{const role=m.r==='u'?'user':'assistant',c=m.t.slice(0,1500);if(hist.length&&hist[hist.length-1].role===role)hist[hist.length-1].content+='\n'+c;else hist.push({role,content:c});});
+  while(hist.length&&hist[0].role!=='user')hist.shift();if(hist.length&&hist[hist.length-1].role==='user')hist.pop();
+  if(!k)return localThink(system,hist,prompt,max);
+  try{const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'content-type':'application/json','x-api-key':k,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+      body:JSON.stringify({model:localStorage.getItem('nsk_arivu_model')||'claude-sonnet-5-5',max_tokens:max,system,messages:hist.concat([{role:'user',content:prompt}])})});
+    const j=await r.json();mood='idle';if(!r.ok)return{err:(j.error&&j.error.message)||('HTTP '+r.status)};return{text:(j.content||[]).map(c=>c.text||'').join('')};}
+  catch(e){mood='idle';return{err:'no internet or blocked ('+e.message+')'};}}
+
+
+/* ================= MIND: understanding + quantum-inspired brain memory =================
+ * Understanding = sentence → concepts + relations (triples).
+ * Every concept is a 4096-bit "hypervector" GROWN from its name (seeded) – never stored, regrown on demand.
+ * bind (XOR) = "entangle" two codes into one; permute = mark the object role;
+ * bundle (majority vote) = "superpose" many facts into ONE code;
+ * recall = unbind + "collapse" to the nearest known concept; similarity = confidence (amplitude).
+ * Surprise filter, conflicts, sleep (decay / merge / links) work like the hippocampus → cortex. */
+const HD_W=128,HD_D=HD_W*32;
+const MIND=Object.assign({facts:[],faded:[],links:{},sleeps:0,lastSleep:0},S.mind||{});S.mind=MIND;
+const hvCache=new Map();
+function hv(name){name=String(name).toLowerCase().trim();if(hvCache.has(name))return hvCache.get(name);let h=2166136261;for(let i=0;i<name.length;i++){h^=name.charCodeAt(i);h=Math.imul(h,16777619);}
+  let x=h>>>0||1;const v=new Uint32Array(HD_W);for(let i=0;i<HD_W;i++){x^=x<<13;x>>>=0;x^=x>>>17;x^=x<<5;x>>>=0;v[i]=x;}if(hvCache.size>4000)hvCache.clear();hvCache.set(name,v);return v;}
+const hvX=(a,b)=>{const o=new Uint32Array(HD_W);for(let i=0;i<HD_W;i++)o[i]=a[i]^b[i];return o;};
+const hvP=(a,k=1)=>{const o=new Uint32Array(HD_W);for(let i=0;i<HD_W;i++)o[(i+k+HD_W)%HD_W]=a[i];return o;};     /* permutation = role "object" */
+const pop=x=>{x-=(x>>>1)&0x55555555;x=(x&0x33333333)+((x>>>2)&0x33333333);return(((x+(x>>>4))&0x0F0F0F0F)*0x01010101)>>>24;};
+const hvSim=(a,b)=>{let d=0;for(let i=0;i<HD_W;i++)d+=pop(a[i]^b[i]);return 1-2*d/HD_D;};       /* +1 same, 0 unrelated */
+function hvBundle(list){const c=new Float32Array(HD_D);let tot=0;list.forEach(([v,w])=>{tot+=w;for(let i=0;i<HD_W;i++){const x=v[i];for(let b=0;b<32;b++)c[i*32+b]+=(x>>>b)&1?w:-w;}});
+  const o=new Uint32Array(HD_W),tie=hv('~tie');for(let i=0;i<HD_W;i++){let x=0;for(let b=0;b<32;b++){const s=c[i*32+b];if(s>0||(s===0&&(tie[i]>>>b)&1))x|=1<<b;}o[i]=x>>>0;}return o;}
+
+/* ---------- understanding: sentence → triples ---------- */
+const REL_SYN={'is in':'in','are in':'in','was in':'in','is at':'in','lives in':'lives in','live in':'lives in','is near':'near','is on':'on','was on':'on','falls on':'on',likes:'likes',like:'likes',loves:'likes',love:'likes',has:'has',have:'has',owns:'has',own:'has',wants:'wants',want:'wants',needs:'needs',need:'needs','works at':'works at','work at':'works at','works in':'works at','works as':'works as','studies':'studies','study':'studies',faces:'faces',face:'faces','is':'is','are':'is','was':'is','=':'is','means':'is'};
+const RELS=Object.keys(REL_SYN).sort((a,b)=>b.length-a.length);
+function cleanC(t){return String(t).toLowerCase().replace(/[.,!?;:"“”]+/g,' ').replace(/\b(my|the|a|an|our|his|her|their|your|that|this|of mine)\b/g,' ').replace(/\s+/g,' ').trim();}
+function understand(text){let s=' '+String(text).toLowerCase().replace(/^(please\s+)?(remember|note|save|keep in mind)\s*(that|this|:)?\s*/i,'')+' ';const out=[];
+  s.split(/\s+(?:and also|also|;)\s+|\.\s+/).forEach(part=>{part=' '+part.trim()+' ';
+    for(const r of RELS){const i=part.indexOf(' '+r+' ');if(i<1)continue;const subj=cleanC(part.slice(0,i)),obj=part.slice(i+r.length+2).trim().replace(/[.!?]+$/,'');if(!subj||!obj)continue;const R=REL_SYN[r];
+      let main=obj,extra=null;const m=obj.match(/^(.+?)\s+(in|at|near)\s+(.+)$/);if(m&&R==='is'){main=m[1];extra=[subj,m[2]==='near'?'near':'in',cleanC(m[3])];}
+      out.push([subj,R,cleanC(main)||main]);if(extra)out.push(extra);break;}});
+  return out.filter(t=>t[0].length<60&&t[2].length<80);}
+
+/* ---------- memory: learn with a surprise filter ---------- */
+const EXCL={is:1,in:1,on:1,'lives in':1,'works at':1,'works as':1,faces:1};
+function mindLearn(text,important){const T=understand(text),rep=[];
+  T.forEach(([s,r,o])=>{const same=MIND.facts.find(f=>f.s===s&&f.r===r&&f.o===o&&!f.old);
+    if(same){same.w=Math.min(5,same.w+1);same.t=Date.now();rep.push({k:'known',s,r,o,w:same.w});return;}
+    const prev=EXCL[r]?MIND.facts.filter(f=>f.s===s&&f.r===r&&!f.old):[];prev.forEach(f=>{f.old=true;f.w*=0.5;});
+    const isNew=!MIND.facts.some(f=>f.s===s||f.o===s);MIND.facts.push({s,r,o,w:important?5:1,imp:!!important,t:Date.now(),d:Date.now()});
+    rep.push({k:prev.length?'changed':isNew?'new':'added',s,r,o,was:prev.map(f=>f.o)});});
+  if(T.length){MIND.raw=(MIND.raw||0)+text.length;save();}return{T,rep};}
+
+/* ---------- recall: unbind + collapse ---------- */
+function subjMem(s){const F=MIND.facts.filter(f=>f.s===s&&!f.old);return F.length?hvBundle(F.map(f=>[hvX(hv('R:'+f.r),hvP(hv(f.o))),f.w])):null;}   /* one superposed code per subject (a cortex column) */
+function globalMem(){const F=MIND.facts.filter(f=>!f.old);return F.length?hvBundle(F.map(f=>[hvX(hvX(hv(f.s),hv('R:'+f.r)),hvP(hv(f.o))),f.w])):null;}
+function collapse(noisy,cands){let best=null;cands.forEach(c=>{const v=hvSim(noisy,hv(c));if(!best||v>best.a)best={c,a:v};});return best;}
+function nearSubj(q){const subs=[...new Set(MIND.facts.map(f=>f.s))],qc=cleanC(q),qw=qc.split(' ').filter(w=>w.length>1&&!STOP.has(w));let best=null;
+  subs.forEach(s=>{const sw=s.split(' ');let sc=0;sw.forEach(w=>{if(qw.includes(w))sc+=w.length;else if(qw.some(x=>x.length>3&&(x.startsWith(w)||w.startsWith(x))))sc+=w.length*0.6;});sc/=s.replace(/ /g,'').length;if(sc>(S.genome.match||0.5)&&(!best||sc>best.sc))best={s,sc};});return best&&best.s;}
+function mindAsk(q){const s0=q.toLowerCase();let r=null;
+  if(/^where|எங்கே|எங்கு/.test(s0))r='in';else if(/^when|எப்போது/.test(s0))r='on';else if(/what does .* like|likes\?/.test(s0))r='likes';else if(/what does .* have|has\?/.test(s0))r='has';else if(/^(what|who|which)('s| is| are)?/.test(s0))r='is';
+  const rev=s0.match(/^(what|who|which)\s+(is|are)\s+(in|at|near)\s+(.+?)\??$/);
+  if(rev){const o=cleanC(rev[4]),M=globalMem();if(!M)return null;const noisy=hvX(M,hvX(hvP(hv(o)),hv('R:in')));const subs=[...new Set(MIND.facts.filter(f=>!f.old).map(f=>f.s))];
+    const ranked=subs.map(c=>({c,a:hvSim(noisy,hv(c))})).sort((a,b)=>b.a-a.a).filter(x=>x.a>0.08).slice(0,4);return ranked.length?{text:'In '+o+': '+ranked.map(x=>x.c).join(', '),amp:Math.min(1,ranked[0].a*Math.sqrt(MIND.facts.filter(f=>!f.old).length)),how:'reverse recall from the ONE superposed memory of all facts'}:null;}
+  const s=nearSubj(q);if(!s)return null;
+  if(r&&!/about|know/.test(s0)){const M=subjMem(s);const cands=[...new Set(MIND.facts.filter(f=>f.r===r).map(f=>f.o))];if(M&&cands.length){const noisy=hvP(hvX(M,hv('R:'+r)),-1),b=collapse(noisy,cands);
+      if(b&&b.a>0.12){MIND.facts.filter(f=>f.s===s&&f.o===b.c).forEach(f=>f.t=Date.now());save();const old=MIND.facts.filter(f=>f.s===s&&f.r===r&&f.old).map(f=>f.o);
+        const nl=MIND.facts.filter(f=>f.s===s&&!f.old).length;return{text:cap(s)+' '+(r==='is'?'is':r==='in'?'is in':r)+' '+b.c+(old.length?' (earlier: '+old.join(', ')+')':''),amp:Math.min(1,b.a*Math.sqrt(nl)),how:'unbind “'+s+'” + “'+r+'”, collapse to nearest concept'};}}}
+  return rebuild(s);}
+function rebuild(s){const F=MIND.facts.filter(f=>f.s===s&&!f.old);if(!F.length)return null;const M=subjMem(s);
+  const parts=F.map(f=>{const a=hvSim(hvP(hvX(M,hv('R:'+f.r)),-1),hv(f.o));return{f,a};}).sort((x,y)=>y.f.w-x.f.w);
+  const links=Object.keys(MIND.links[s]||{}).slice(0,4);parts.forEach(p=>p.f.t=Date.now());save();
+  return{text:cap(s)+': '+parts.map(p=>(p.f.r==='is'?'':p.f.r+' ')+p.f.o+(p.f.imp?' ⭐':'')).join('; ')+(links.length?'\nLinked in my web: '+links.join(', '):''),amp:Math.min(1,Math.min(...parts.map(p=>p.a))*Math.sqrt(F.length)),how:'memory rebuilt from '+F.length+' superposed links'};}
+const cap=t=>t.charAt(0).toUpperCase()+t.slice(1);
+
+/* ---------- sleep: hippocampus → cortex ---------- */
+function mindSleep(){const now=Date.now(),wk=7*864e5;let faded=0,merged=0;
+  const seen={};MIND.facts=MIND.facts.filter(f=>{const k=f.s+'|'+f.r+'|'+f.o+'|'+(f.old?1:0);if(seen[k]){seen[k].w=Math.min(5,seen[k].w+f.w);seen[k].imp=seen[k].imp||f.imp;merged++;return false;}seen[k]=f;return true;});
+  MIND.facts.forEach(f=>{if(!f.imp&&now-f.t>wk)f.w*=0.85;if(f.old)f.w*=0.8;});
+  let asked=0;MIND.facts.filter(f=>!f.imp&&f.w<0.05+0.4*D('forget')).forEach(f=>{if(fadeWithCare(f)==='acted'){MIND.faded.push({s:f.s,r:f.r,o:f.o,gone:now});faded++;}else asked++;});if(MIND.faded.length>200)MIND.faded.splice(0,MIND.faded.length-200);
+  const seenN={};let dup=0;S.facts=S.facts.filter(n=>{const k=n.t.toLowerCase().trim();if(!seenN[k]){seenN[k]=1;return true;}const a={kind:'duplicate',label:n.t,harm:0.1,unsure:0.1,permanent:0,owner:'mine'};if(cautionScore(a)<0.45-0.4*D('ask')){toBin('note','duplicate: '+n.t,n,'duplicate');dup++;return false;}return true;});if(dup)cauLog('removed '+dup+' duplicate note(s) – original kept');
+  const L={},add=(a,b)=>{if(a===b)return;(L[a]=L[a]||{})[b]=((L[a]||{})[b]||0)+1;};MIND.facts.filter(f=>!f.old).forEach(f=>{add(f.s,f.o);add(f.o,f.s);});
+  const byO={};MIND.facts.filter(f=>!f.old).forEach(f=>(byO[f.r+'|'+f.o]=byO[f.r+'|'+f.o]||[]).push(f.s));Object.values(byO).forEach(ss=>{for(const a of ss)for(const b of ss)add(a,b);});
+  MIND.links=L;MIND.sleeps++;MIND.lastSleep=now;save();return{merged,faded,asked,dup,concepts:Object.keys(L).length,facts:MIND.facts.length};}
+
+/* ---------- Mind tab ---------- */
+function mindStats(){const F=MIND.facts,raw=MIND.raw||0,stored=JSON.stringify(F.map(f=>[f.s,f.r,f.o,+f.w.toFixed(2)])).length,concepts=new Set(F.flatMap(f=>[f.s,f.o])).size;
+  return`${F.filter(f=>!f.old).length} live links · ${concepts} concepts · ${F.filter(f=>f.old).length} history · ${MIND.faded.length} faded · slept ${MIND.sleeps}× · stored ${stored.toLocaleString()} bytes (your sentences were ${raw.toLocaleString()} bytes; concept codes take 0 bytes – regrown from their names, ${HD_D} bits each)`;}
+function renderMind(){if(!$('mweb'))return;$('mstat').textContent=mindStats();
+  const F=MIND.facts.filter(f=>!f.old),C=[...new Set(F.flatMap(f=>[f.s,f.o]))].slice(0,40),W=360,H=Math.max(260,Math.min(420,120+C.length*6)),cx=W/2,cy=H/2,R=Math.min(cx,cy)-40,pos={};
+  C.forEach((c,i)=>{const a=i/C.length*Math.PI*2-Math.PI/2;pos[c]=[cx+R*Math.cos(a),cy+R*Math.sin(a)];});
+  let g=F.filter(f=>pos[f.s]&&pos[f.o]).map(f=>`<line x1="${pos[f.s][0].toFixed(1)}" y1="${pos[f.s][1].toFixed(1)}" x2="${pos[f.o][0].toFixed(1)}" y2="${pos[f.o][1].toFixed(1)}" stroke="#38e1ff" stroke-opacity="${(0.25+0.15*f.w).toFixed(2)}" stroke-width="${(0.6+f.w*0.4).toFixed(1)}"/>`).join('');
+  g+=C.map(c=>{const subj=F.some(f=>f.s===c),[x,y]=pos[c];return`<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${subj?6:4}" fill="${subj?'#ffc24a':'#38e1ff'}"/><text x="${x.toFixed(1)}" y="${(y-9).toFixed(1)}" fill="#dbe7f5" font-size="10" text-anchor="middle">${esc(c.slice(0,16))}</text>`;}).join('');
+  $('mweb').innerHTML=C.length?`<svg viewBox="0 0 ${W} ${H}" style="width:100%;max-width:520px;background:#0a1220;border-radius:10px">${g}</svg>`:'<p class="mu">The web is empty – teach me facts like “my plot is 38 in Thanjavur”.</p>';
+  $('mfacts').innerHTML=MIND.facts.slice().reverse().slice(0,60).map(f=>`<div class="it"><span class="${f.old?'done':''}">${esc(f.s)} <b style="color:var(--cy)">—${esc(f.r)}→</b> ${esc(f.o)} <span class="mu">· strength ${f.w.toFixed(1)}${f.old?' · history':''}</span></span><span class="x" data-star="${MIND.facts.indexOf(f)}" title="important – never fades">${f.imp?'⭐':'☆'}</span><span class="x" data-mdel="${MIND.facts.indexOf(f)}">✕</span></div>`).join('');}
+
+
+/* ================= THINKING STAGE · SCENES · IMAGINATION =================
+ * Stage = working memory: 4 slots, newest pushes the oldest off (the director's stage).
+ * Scenes = episodic memory: life cut at event boundaries; a scene keeps only what CHANGED + a feeling word.
+ * Imagination = recombine two stored concepts/scenes into a new "what if", then send it through the physics gate. */
+const STAGE=[];S.scenes=S.scenes||[];let SCENE=null;
+function stagePut(kind,t){if(!t)return;const i=STAGE.findIndex(x=>x.t===t);if(i>=0)STAGE.splice(i,1);STAGE.unshift({kind,t,at:Date.now()});if(STAGE.length>4)STAGE.pop();renderStage();}
+function stageTopic(){const x=STAGE.find(s=>s.kind==='topic');return x&&x.t;}
+const PERSON=/\b(amma|appa|mother|father|wife|husband|son|daughter|brother|sister|friend|uncle|aunt|sir|madam|teacher|boss|grandma|grandpa|thatha|paati|anna|akka|thambi|thangai)\b/;
+function resolveRefs(q){let t=stageTopic();if(!t)return q;if(/\b(he|she|him|her|they|them)\b/i.test(q)){const pt=STAGE.filter(x=>x.kind==='topic').map(x=>x.t).find(x=>PERSON.test(x)||MIND.facts.some(f=>f.s===x&&/likes|wants|needs|works|lives/.test(f.r)));if(pt)t=pt;}   /* "where is it?" → "where is plot?" – the stage remembers what we are talking about */
+  return q.replace(/\b(it|its|that|this one|there|him|her|he|she|they|them)\b/i,m=>/its/i.test(m)?t+"'s":/there/i.test(m)?'in '+t:t);}
+const FEEL=[[/happy|glad|great|super|சந்தோஷ|மகிழ்ச்சி|excited/i,'happy'],[/sad|upset|cry|கவலை|வருத்த/i,'sad'],[/tired|sleepy|exhausted|சோர்வ/i,'tired'],[/angry|irritat|கோபம்/i,'angry'],[/worried|tension|scared|fear|பயம்/i,'worried'],[/proud|won|passed|cleared/i,'proud']];
+function sceneTouch(topic,change,q){const now=Date.now(),feel=(FEEL.find(([re])=>re.test(q||''))||[])[1];
+  const boundary=!SCENE||now-SCENE.end>10*60e3||(topic&&SCENE.topic&&topic!==SCENE.topic&&change);
+  if(boundary){sceneClose();SCENE={id:uid(),start:now,end:now,topic:topic||'',changes:[],feel:'',turns:0};}
+  SCENE.end=now;SCENE.turns++;if(topic&&!SCENE.topic)SCENE.topic=topic;if(feel)SCENE.feel=feel;if(change&&SCENE.changes.length<8&&!SCENE.changes.includes(change))SCENE.changes.push(change);renderScenes();}
+function sceneClose(){if(!SCENE)return;if(SCENE.changes.length||SCENE.feel){S.scenes.unshift(SCENE);if(S.scenes.length>300)S.scenes.length=300;save();}SCENE=null;renderScenes();}   /* ordinary chat leaves nothing */
+function scenesText(day){const d0=new Date();d0.setHours(0,0,0,0);const from=day==='yesterday'?+d0-864e5:+d0,to=day==='yesterday'?+d0:Infinity;
+  const L=(SCENE&&(SCENE.changes.length||SCENE.feel)?[SCENE]:[]).concat(S.scenes).filter(s=>s.start>=from&&s.start<to);
+  return L.length?L.slice().reverse().map(s=>'🎬 '+new Date(s.start).toLocaleTimeString('en-IN',{hour:'numeric',minute:'2-digit'})+(s.topic?' · '+s.topic:'')+(s.feel?' · felt '+s.feel:'')+'\n   '+s.changes.join('; ')).join('\n'):'Nothing worth a scene '+(day==='yesterday'?'yesterday':'today')+' yet – ordinary chat leaves no memory, only changes do.';}
+function renderScenes(){if(!$('mscenes'))return;const L=(SCENE?[SCENE]:[]).concat(S.scenes).filter(s=>s.changes.length||s.feel).slice(0,30);
+  $('mscenes').innerHTML=L.length?L.map(s=>`<div class="it"><span>🎬 <b>${new Date(s.start).toLocaleString('en-IN',{day:'numeric',month:'short',hour:'numeric',minute:'2-digit'})}</b>${s.topic?' · '+esc(s.topic):''}${s.feel?' · <span class="pill">'+esc(s.feel)+'</span>':''}<br><span class="mu">${esc(s.changes.join('; '))}</span></span></div>`).join(''):'<p class="mu">No scenes yet. Scenes are made only when something changes (a new fact, task, idea, score) or a feeling is shared.</p>';}
+function renderStage(){if(!$('mstage'))return;$('mstage').innerHTML=[0,1,2,3].map(i=>{const x=STAGE[i];return`<div style="flex:1;min-width:70px;border:1px solid ${x?'var(--cy)':'var(--ln)'};border-radius:10px;padding:6px;font-size:12px;text-align:center">${x?'<span class="mu">'+x.kind+'</span><br>'+esc(x.t.slice(0,40)):'<span class="mu">empty</span>'}</div>`;}).join('');}
+function imagine(q){const pool=[...new Set(MIND.facts.filter(f=>!f.old).flatMap(f=>[f.s,f.o]))].filter(c=>!/^\d+$/.test(c)),ws=cleanC(q.replace(/^(imagine|what if|kanavu|கற்பனை)\s*/i,'')).split(/\s+(?:and|with|\+|plus)\s+/);
+  let a=ws[0]&&ws[0].length>1?ws[0]:null,b=ws[1]||null;const pick=x=>{const L=pool.filter(c=>c!==x).sort((p,r)=>hvSim(hv(r),hv(x||'~'))-hvSim(hv(p),hv(x||'~')));if(!L.length)return null;const w=D('wild');return w>0.66?L.at(-1):w<0.33?L[0]:L[Math.floor(Math.random()*L.length)];};
+  if(!a)a=STAGE.find(s=>s.kind==='topic')?.t||pool[Math.floor(Math.random()*pool.length)];if(!b)b=pick(a)||TRIZ[Math.floor(Math.random()*40)][0].toLowerCase();
+  if(!a)return null;const pr=TRIZ[((hv(a)[0]^hv(b)[0])>>>0)%40];const idea=`What if “${a}” were combined with “${b}”?`;
+  const lines=[`✨ ${idea}`,`Spark (${pr[0]}): ${pr[1]}`,`Try: describe in one line how ${a} could use ${b} – then I will run it through the physics gate.`];
+  S.ideas.unshift({id:uid(),p:idea,v:gate(a+' '+b).v,sparks:[pr[0]],t:Date.now(),steps:[0,0,0,0,0,0,0,0],notes:'imagined from memory'});save();renderIdeas();return{a,b,text:lines.join('\n')};}
+
+
+/* ================= FEAR / CAUTION GATE =================
+ * Before any action that loses something: caution = harm × unsure × permanent × owner × habit.
+ * Low → act and tell afterwards. High → stop and ask. Every delete goes to a recycle bin first (safety net lowers fear).
+ * Habits: each yes/no you give teaches the gate – approve a kind of action often and it stops asking; a correction raises it again. */
+S.caution=Object.assign({habits:{},bin:[],log:[]},S.caution||{});const CAU=S.caution;
+function habitF(kind){const h=CAU.habits[kind]||{yes:0,no:0};return Math.max(0.15,Math.min(2,(1+h.no*1.5)/(1+h.yes*0.6)));}
+function cautionScore(a){const own=a.owner==='user'?1.3:0.8;return+(a.harm*(0.3+a.unsure)*(a.permanent?1:0.4)*own*habitF(a.kind)).toFixed(3);}
+function cauLog(t){CAU.log.unshift({t,at:Date.now()});if(CAU.log.length>60)CAU.log.length=60;}
+function toBin(kind,label,data,act){CAU.bin.unshift({id:uid(),kind,label,data,act:act||kind+'-del',at:Date.now()});const cut=Date.now()-30*864e5;CAU.bin=CAU.bin.filter(b=>b.at>cut).slice(0,300);save();renderCaution();}
+function restoreBin(id){const b=CAU.bin.find(x=>x.id===id);if(!b)return;
+  if(b.kind==='fact')MIND.facts.push(b.data);else if(b.kind==='note')S.facts.unshift(b.data);else if(b.kind==='task')S.tasks.unshift(b.data);else if(b.kind==='idea')S.ideas.unshift(b.data);else if(b.kind==='doc')b.data.forEach(d=>S.docs.push(d));else if(b.kind==='recipe')S.recipes.unshift(b.data);else if(b.kind==='pred')S.preds.unshift(b.data);
+  CAU.bin=CAU.bin.filter(x=>x!==b);const hk=b.act||b.kind+'-del',h=CAU.habits[hk]=CAU.habits[hk]||{yes:0,no:0};h.no++;   /* you undid it → be more careful with this kind next time */
+  cauLog('↩ restored '+b.label+' – I will be more careful with this kind');save();renderAll();say('↩ Restored: '+b.label+'. I will be more careful before removing this kind of thing.',{tag:'🛡 caution'});}
+/* ask in chat with two buttons; answers teach the habit */
+function askPermission(text,kind,onYes,onNo){const d=say('🛡 '+text+'\n(குறள் 467: எண்ணித் துணிக கருமம் – think first, then act)',{tag:'🛡 caution · asking because this matters'});const row=document.createElement('div');row.className='row';
+  const adoptK=kind==='adopt-child';row.innerHTML=adoptK?'<button class="btn" data-a="no">Keep the parent</button><button class="btn p" data-a="yes">Yes, adopt the child</button>':'<button class="btn" data-a="no">Keep it</button><button class="btn p" data-a="yes">Yes, remove</button>';d.appendChild(row);
+  row.onclick=e=>{const a=e.target.dataset.a;if(!a)return;const h=CAU.habits[kind]=CAU.habits[kind]||{yes:0,no:0};h[a]++;row.innerHTML='<span class="mu">'+(adoptK?(a==='yes'?'✔ child adopted':'✔ parent kept'):(a==='yes'?'✔ removed (in the recycle bin for 30 days)':'✔ kept – and I learnt you want this kind kept'))+'</span>';(a==='yes'?onYes:onNo)();cauLog((a==='yes'?'you approved ':'you refused ')+kind);save();renderCaution();};}
+/* the gate */
+function cautious(a,doIt,keep){const c=cautionScore(a),th=0.45-0.4*D('ask');if(c<th){doIt();cauLog('acted ('+c+'): '+a.label);return'acted';}askPermission(a.ask||('Should I remove “'+a.label+'”?'),a.kind,doIt,keep||(()=>{}));return'asked';}
+/* sleep with fear: fading memories pass the gate */
+function fadeWithCare(f){const unique=MIND.facts.filter(x=>x.s===f.s&&x!==f&&!x.old).length===0;
+  const a={kind:'fade',label:f.s+' '+f.r+' '+f.o,harm:f.imp?1:unique?0.7:0.2,unsure:unique?0.6:0.2,permanent:0,owner:'user',ask:'While sleeping I want to forget “'+f.s+' '+f.r+' '+f.o+'” (not used for a long time'+(unique?', and it is the only thing I know about '+f.s:'')+'). Forget it?'};
+  return cautious(a,()=>{MIND.facts=MIND.facts.filter(x=>x!==f);toBin('fact',a.label,f,'fade');renderMind();},()=>{f.w=Math.max(f.w,1);f.t=Date.now();save();renderMind();});}
+function renderCaution(){if(!$('cbin'))return;const H=Object.entries(CAU.habits);
+  $('chab').innerHTML=H.length?H.map(([k,h])=>`<span class="pill">${esc(k)}: ✔${h.yes} ✘${h.no} → caution ×${habitF(k).toFixed(2)}</span>`).join(' '):'<span class="mu">No habits learnt yet.</span>';
+  $('cbin').innerHTML=CAU.bin.length?CAU.bin.slice(0,40).map(b=>`<div class="it"><span>🗑 ${esc(b.label)} <span class="mu">· ${esc(b.kind)} · ${new Date(b.at).toLocaleDateString('en-IN')}</span></span><span class="x" data-rest="${b.id}">↩ restore</span></div>`).join(''):'<p class="mu">Recycle bin is empty.</p>';
+  $('clog').textContent=CAU.log.slice(0,6).map(l=>'• '+l.t).join('\n');}
+
+
+/* ================= KNOW IT → CREATE IT (recipe memory) =================
+ * Instead of keeping a full copy, keep a RECIPE: gist sentences + key concepts + EXACT ANCHORS (numbers, dates,
+ * article/section numbers, names). Recreate on demand and check every anchor came back exactly. */
+S.recipes=S.recipes||[];
+const SENT=t=>String(t).replace(/\s+/g,' ').match(/[^.!?।]+[.!?।]?/g)||[];
+function anchorsOf(t){const A=[],add=(type,v)=>{v=v.trim();if(v&&!A.some(a=>a.v===v))A.push({type,v});};let m;
+  const R=[[/\b(Article|Section|Rule|Schedule|Part|Clause)\s+\d+[A-Z]?(\(\d+\))?/gi,'law'],[/\b\d{1,2}[\/.-]\d{1,2}[\/.-]\d{2,4}\b/g,'date'],[/\b(19|20)\d{2}\b/g,'year'],
+    [/\b\d+(?:\.\d+)?\s?(?:%|km|m|cm|mm|kg|g|acres?|cents?|hectares?|sq\.?\s?(?:m|ft)|crore|lakh|rs\.?|₹)(?![a-z])/gi,'number'],[/₹\s?\d[\d,]*(\.\d+)?/g,'number'],
+    [/\bS\.?\s?No\.?\s?\d+[\/\dA-Z]*/gi,'survey'],[/\b\d+(?:\.\d+)?\b/g,'number'],[/(?<![.!?]\s)(?<!^)\b([A-Z][a-z]+(?:\s[A-Z][a-z]+)+)\b/g,'name']];
+  R.forEach(([re,type])=>{re.lastIndex=0;while((m=re.exec(t)))add(type,m[0]);});
+  const out=[];A.forEach(a=>{if(!A.some(b=>b!==a&&b.v.length>a.v.length&&b.v.includes(a.v)))out.push(a);});return out.slice(0,40);}
+function makeRecipe(title,text,src){const ss=SENT(text).map(x=>x.trim()).filter(x=>x.length>15);if(!ss.length)return null;
+  const tf={};ss.forEach(x=>toks(x).forEach(w=>tf[w]=(tf[w]||0)+1));const concepts=Object.entries(tf).filter(([w])=>w.length>3&&!/^\d/.test(w)).sort((a,b)=>b[1]-a[1]).slice(0,10).map(x=>x[0]);
+  const anchors=anchorsOf(text),k=Math.min(6,Math.max(2,Math.round(ss.length*0.15)));
+  const scored=ss.map((x,i)=>{const w=toks(x);let sc=w.reduce((s,y)=>s+(tf[y]||0),0)/Math.sqrt(1+w.length);if(anchors.some(a=>x.includes(a.v)))sc*=1.4;if(i===0)sc*=1.3;return{x,i,sc};});
+  const gist=scored.sort((a,b)=>b.sc-a.sc).slice(0,k).sort((a,b)=>a.i-b.i).map(o=>o.x);
+  const missing=anchors.filter(a=>!gist.some(g=>g.includes(a.v)));    /* anchors not already inside the gist are kept separately with a few words of context */
+  missing.forEach(a=>{const s0=ss.find(x=>x.includes(a.v))||'',i=s0.indexOf(a.v),pre=s0.slice(0,i).trim().split(' ').slice(-3).join(' '),post=s0.slice(i+a.v.length).trim().split(' ').slice(0,3).join(' ');a.ctx=(pre+' '+a.v+' '+post).trim();});
+  const r={id:uid(),title,src:src||'',gist,concepts,anchors,raw:text.length,t:Date.now()};r.size=JSON.stringify([r.gist,r.concepts,r.anchors]).length;
+  if(r.size>=(0.3+0.7*D('know'))*r.raw)return{small:true,raw:r.raw,size:r.size,title};   /* knowing pays only for big things: a short text is cheaper to keep whole */
+  S.recipes.unshift(r);save();renderRecipes();return r;}
+function findRecipe(q){const qq=q.replace(/^(please\s+)?(recreate|retell|re-?create|tell me the story of|tell me again|create again|summari[sz]e)\s*/i,'').trim();if(!S.recipes.length)return null;
+  const h=tfidfSearch(qq,S.recipes,r=>r.title+' '+r.concepts.join(' ')+' '+r.gist.join(' '),1);return h.length?h[0].it:(/last|it|that/.test(qq)?S.recipes[0]:null);}
+function checkAnchors(text,r){const miss=r.anchors.filter(a=>!text.includes(a.v));return{ok:!miss.length,miss};}
+async function recreate(r,out){const set=t=>{out.innerHTML=t;};
+  const offline=()=>{let t='📜 '+r.title+'\n\n'+r.gist.join(' ');const extra=r.anchors.filter(a=>a.ctx);if(extra.length)t+='\n\nExact details kept: '+extra.map(a=>'“…'+a.ctx+'…”').join(' · ');return t;};
+  if(bigKey()||LOCAL.model){set('<span class="mu">Recreating from the recipe…</span>');const res=await big('Recreate a full, clear explanation of "'+r.title+'" from this recipe. Expand it naturally in simple words with a movie-scene example, BUT copy every EXACT ANCHOR character for character and never invent new numbers, dates or names.\nGIST: '+r.gist.join(' ')+'\nKEY CONCEPTS: '+r.concepts.join(', ')+'\nEXACT ANCHORS: '+r.anchors.map(a=>a.v+(a.ctx?' ('+a.ctx+')':'')).join(' | '),null,1500);
+    if(res&&res.text){const c=checkAnchors(res.text,r);set('<div style="white-space:pre-wrap">'+esc(res.text)+'</div><p class="'+(c.ok?'ok':'bad')+'">'+(c.ok?'✔ all '+r.anchors.length+' exact anchors came back unchanged':'⚠ '+c.miss.length+' anchor(s) missing – the exact values are: '+esc(c.miss.map(a=>a.v).join(', ')))+'</p>');return res.text;}}
+  const t=offline(),c=checkAnchors(t,r);set('<div style="white-space:pre-wrap">'+esc(t)+'</div><p class="'+(c.ok?'ok':'bad')+'">'+(c.ok?'✔ all '+r.anchors.length+' exact anchors present':'⚠ missing: '+esc(c.miss.map(a=>a.v).join(', ')))+' · simple offline recreation – the big brain makes it rich</p>');return t;}
+function renderRecipes(){if(!$('rlist'))return;const raw=S.recipes.reduce((s,r)=>s+r.raw,0),kept=S.recipes.reduce((s,r)=>s+r.size,0);
+  $('rstat').textContent=S.recipes.length?`${S.recipes.length} recipe(s): originals ${raw.toLocaleString()} bytes → recipes ${kept.toLocaleString()} bytes (${raw?Math.round(100*kept/raw):0}% of the size)`:'';
+  $('rlist').innerHTML=S.recipes.length?S.recipes.map(r=>`<div class="it"><div style="flex:1"><b>📜 ${esc(r.title)}</b> <span class="mu">· ${r.raw.toLocaleString()} → ${r.size.toLocaleString()} bytes · ${r.anchors.length} exact anchors</span><div class="mu">${esc(r.anchors.slice(0,8).map(a=>a.v).join(' · '))}</div><div class="row"><button class="btn" data-rc="${r.id}">▶ Recreate</button></div><div data-ro="${r.id}"></div></div><span class="x" data-rdel="${r.id}">✕</span></div>`).join(''):'<p class="mu">No recipes yet. Load a document with “Learn as recipe” ticked, or say “learn this story: …”.</p>';}
+
+/* ================= TWO-FACED KNIFE: balance dials =================
+ * Every power has two edges. Each dial 0..1 sets where Chella Kutty stands between them; a precise question
+ * (numbers, survey, law, money) turns it to the careful edge for that one answer. */
+const DIAL_DEF=[['depth','Speed','Depth','fast small-brain answer','slow, deep big-brain answer',0.5],['ask','Act','Ask','acts and tells you after','asks permission first',0.5],
+ ['forget','Remember all','Forget more','keeps nearly everything','keeps only essentials',0.5],['know','Copy','Know','keeps full copies','keeps recipes, recreates',0.7],
+ ['careful','Confident','Careful','answers from weak signals','says “not sure” unless strong',0.5],['wild','Familiar','Wild','safe nearby ideas','far, surprising ideas',0.5]];
+S.dials=Object.assign(Object.fromEntries(DIAL_DEF.map(d=>[d[0],d[5]])),S.dials||{});let PRECISE=false;
+function D(k){let v=S.dials[k];if(PRECISE){if(k==='careful'||k==='ask'||k==='depth')v=Math.max(v,0.75);if(k==='know')v=Math.min(v,0.5);}return v;}
+const isPrecise=q=>/\d|survey|s\.?\s?no|article|section|\bact\b|acre|cent|₹|\brs\b|patta|chitta|fmb|\bdate\b|\blaw\b|court|judg|amount|price|exam|number|how much|how many|area|length|measure/i.test(q);
+function renderDials(){if(!$('dials'))return;$('dials').innerHTML=DIAL_DEF.map(([k,a,b,da,db])=>`<div style="margin:8px 0"><div class="row" style="justify-content:space-between;margin:0"><b>${a}</b><span class="mu">${Math.round(S.dials[k]*100)}%</span><b>${b}</b></div><input type="range" min="0" max="100" value="${Math.round(S.dials[k]*100)}" data-dial="${k}" style="width:100%"><div class="row mu" style="justify-content:space-between;margin:0;font-size:11px"><span>${da}</span><span>${db}</span></div></div>`).join('');}
+
+
+/* ================= PREDICTION: many sources, judged by track record =================
+ * Panchangam = real astronomy (sun & moon positions) + Tamil names; meanings are tradition (labelled, not proven).
+ * Weather = Open-Meteo forecast (physics). Seasons/terrain = geography base rates. Every prediction is scored later. */
+S.preds=S.preds||[];S.place=S.place||null;
+const SRC={science:'🔬 Physics / measurement',geo:'🌍 Geology & geography',records:'📊 Records & history',guide:'🧓 A guide',tradition:'🪔 Tamil tradition / astrology',feeling:'💭 My feeling'};
+const NAK=['Aswini','Bharani','Karthigai','Rohini','Mirugasirisham','Thiruvathirai','Punarpoosam','Poosam','Ayilyam','Magam','Pooram','Uthiram','Hastham','Chithirai','Swathi','Visakam','Anusham','Kettai','Moolam','Pooradam','Uthiradam','Thiruvonam','Avittam','Sadayam','Poorattathi','Uthirattathi','Revathi'];
+const RASI=['Mesham','Rishabam','Mithunam','Kadagam','Simmam','Kanni','Thulam','Viruchigam','Dhanusu','Magaram','Kumbam','Meenam'];
+const TMONTH=['Chithirai','Vaikasi','Aani','Aadi','Avani','Purattasi','Aippasi','Karthigai','Margazhi','Thai','Maasi','Panguni'];
+const TITHI=['Prathamai','Dvitiyai','Tritiyai','Chaturthi','Panchami','Shashti','Saptami','Ashtami','Navami','Dasami','Ekadasi','Dvadasi','Trayodasi','Chaturdasi'];
+const r360=x=>((x%360)+360)%360,sn=x=>Math.sin(x*Math.PI/180);
+function panchangam(date){const d=(date.getTime()/864e5+2440587.5)-2451545.0;   /* days from J2000 */
+  const L=r360(280.460+0.9856474*d),g=r360(357.528+0.9856003*d),sun=r360(L+1.915*sn(g)+0.020*sn(2*g));
+  const Lm=r360(218.316+13.176396*d),Mm=r360(134.963+13.064993*d),Dm=r360(Lm-L);
+  const moon=r360(Lm+6.289*sn(Mm)+1.274*sn(2*Dm-Mm)+0.658*sn(2*Dm)-0.186*sn(g)-0.059*sn(2*Dm-2*Mm)-0.057*sn(2*Dm-g-Mm)+0.053*sn(2*Dm+Mm));
+  const ayan=23.853+(d/365.25)*0.013969,sid=x=>r360(x-ayan),el=r360(moon-sun),ti=Math.floor(el/12),paksha=ti<15?'Valarpirai (waxing)':'Theipirai (waning)';
+  const tname=ti===14?'Pournami (full moon)':ti===29?'Amavasai (new moon)':TITHI[ti%15];
+  return{tithi:tname,paksha,nak:NAK[Math.floor(sid(moon)/(360/27))],moonRasi:RASI[Math.floor(sid(moon)/30)],month:TMONTH[Math.floor(sid(sun)/30)],illum:Math.round(50*(1-Math.cos(el*Math.PI/180))),sunSid:sid(sun),moonSid:sid(moon)};}
+const TRAD={'Amavasai (new moon)':'traditionally a day for remembering ancestors (tharpanam)','Pournami (full moon)':'traditionally a day for temple worship and girivalam','Ekadasi':'traditionally a fasting day for Vishnu devotees','Chaturthi':'Sankatahara / Vinayaka worship days fall on Chaturthi','Shashti':'traditionally linked with Murugan worship','Pradosham':''};
+function panchText(date){const p=panchangam(date||new Date());const tr=TRAD[p.tithi]||'';
+  return`🪔 ${(date||new Date()).toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'long',year:'numeric'})}\nTamil month: ${p.month} · Tithi: ${p.tithi} (${p.paksha}) · Nakshatra: ${p.nak} · Moon in ${p.moonRasi} · Moon ${p.illum}% lit\n🔬 These positions are real astronomy, calculated on your device (accurate to about a degree – near a boundary, check a printed panchangam).${tr?'\n🪔 Tradition: '+tr+'.':''}\n⚠ Predictions drawn from astrology are cultural belief, not proven by science – I keep their score like any other source.`;}
+const GEO=[[/rain|monsoon|cyclone|storm|புயல்|மழை/i,'🌍 Tamil Nadu gets nearly half of its yearly rain from the northeast monsoon (October–December); the southwest monsoon (June–September) brings less to most of the state. Cyclones form in the Bay of Bengal mostly in October–December.'],
+ [/earthquake|quake|நிலநடுக்க/i,'🌍 Most of Tamil Nadu lies in India’s low-to-moderate seismic zones (II–III). Exact earthquake dates cannot be predicted by anyone – only long-term risk.'],
+ [/heat|summer|temperature|வெயில்/i,'🌍 Tamil Nadu’s hottest months are usually April–June (Agni Nakshatram falls in May); coastal places stay more humid, interior places hotter.'],
+ [/flood|வெள்ள/i,'🌍 Floods in the Cauvery delta mostly follow heavy northeast-monsoon or cyclone rain (October–December); low-lying and riverside land is most at risk – check the land’s height and drainage.'],
+ [/soil|crop|sow|farm|விவசாய/i,'🌍 The Cauvery delta has fertile alluvial soil; samba paddy is mostly sown around August–September and harvested around January (Thai). Local practice varies – ask a local guide too.']];
+async function weather(out){if(!S.place){out.textContent='Tell me your place first: set it in the 🔮 Predict tab (type a town or use “📍 my location”).';return null;}
+  try{const u=`https://api.open-meteo.com/v1/forecast?latitude=${S.place.lat}&longitude=${S.place.lon}&daily=precipitation_probability_max,precipitation_sum,temperature_2m_max,temperature_2m_min&timezone=auto&forecast_days=4`;
+    const j=await (await fetch(u)).json(),D=j.daily;const t=D.time.map((d,i)=>`${new Date(d).toLocaleDateString('en-IN',{weekday:'short',day:'numeric',month:'short'})}: rain chance ${D.precipitation_probability_max[i]}% (${D.precipitation_sum[i]} mm), ${Math.round(D.temperature_2m_min[i])}–${Math.round(D.temperature_2m_max[i])} °C`).join('\n');
+    const txt='🔬 Weather forecast for '+S.place.name+' (Open-Meteo, physics models):\n'+t;out.textContent=txt;return{txt,tomorrowRain:D.precipitation_probability_max[1],day:D.time[1]};}
+  catch(e){out.textContent='Weather needs internet (Open-Meteo). '+e.message;return null;}}
+function addPred(text,src,conf,due){const p={id:uid(),text,src,conf:Math.max(1,Math.min(99,+conf||50)),due:due||new Date(Date.now()+864e5).toISOString().slice(0,10),made:Date.now(),result:null};S.preds.unshift(p);save();renderPreds();return p;}
+function score(){const by={};S.preds.filter(p=>p.result!=null).forEach(p=>{const b=by[p.src]=by[p.src]||{n:0,hit:0,brier:0,conf:0};b.n++;if(p.result)b.hit++;b.conf+=p.conf;b.brier+=Math.pow(p.conf/100-(p.result?1:0),2);});return by;}
+function duePreds(){const today=new Date().toISOString().slice(0,10);return S.preds.filter(p=>p.result==null&&p.due<=today);}
+function askDue(){duePreds().slice(0,3).forEach(p=>{const d=say('🔮 Check time: on '+p.due+' you predicted (from '+SRC[p.src]+', '+p.conf+'% sure): “'+p.text+'”. Did it happen?',{tag:'🔮 keeping score'});const row=document.createElement('div');row.className='row';
+  row.innerHTML='<button class="btn p" data-r="1">Yes, it happened</button><button class="btn" data-r="0">No</button>';d.appendChild(row);row.onclick=e=>{const r=e.target.dataset.r;if(r==null)return;p.result=r==='1';save();renderPreds();row.innerHTML='<span class="mu">✔ scored – '+SRC[p.src]+' track record updated</span>';};});}
+function renderPreds(){if(!$('plist'))return;const by=score();
+  $('pscore').innerHTML=Object.keys(by).length?'<table style="width:100%;font-size:13px;border-collapse:collapse"><tr class="mu"><td>Source</td><td>Checked</td><td>Came true</td><td>Avg sure</td><td>Brier (lower = better)</td></tr>'+Object.entries(by).sort((a,b)=>a[1].brier/a[1].n-b[1].brier/b[1].n).map(([k,b])=>`<tr><td>${SRC[k]}</td><td>${b.n}</td><td>${Math.round(100*b.hit/b.n)}%</td><td>${Math.round(b.conf/b.n)}%</td><td>${(b.brier/b.n).toFixed(2)}</td></tr>`).join('')+'</table><p class="mu">Brier score: 0 = perfect, 0.25 = no better than guessing 50/50, higher = worse than guessing.</p>':'<p class="mu">No checked predictions yet – scores appear after their dates pass and you answer.</p>';
+  $('plist').innerHTML=S.preds.length?S.preds.slice(0,30).map(p=>`<div class="it"><span>${p.result==null?'⏳':p.result?'✔':'✘'} ${esc(p.text)} <span class="mu">· ${SRC[p.src]} · ${p.conf}% · due ${p.due}</span></span><span class="x" data-pdel="${p.id}">✕</span></div>`).join(''):'';}
+
+
+/* ================= TAMIL WISDOM PACK =================
+ * Full Thirukkural: downloaded by Chella Kutty itself (open GitHub copy, Tamil text only) or loaded from a file
+ * (Project Madurai HTML / JSON). Built-in: a few verified kurals, the kural-to-layer conscience, Silappatikaram recipe,
+ * ancient-technology cards labelled proven / literary / legend. */
+S.kural=S.kural||null;   /* {n:[[line1,line2],…1330], ch:{chapterNo:name}, src} */
+const KURAL_SEED={1:['அகர முதல எழுத்தெல்லாம் ஆதி','பகவன் முதற்றே உலகு.'],2:['கற்றதனால் ஆய பயனென்கொல் வாலறிவன்','நற்றாள் தொழாஅர் எனின்.'],391:['கற்க கசடறக் கற்பவை கற்றபின்','நிற்க அதற்குத் தக.'],423:['எப்பொருள் யார்யார்வாய்க் கேட்பினும் அப்பொருள்','மெய்ப்பொருள் காண்பது அறிவு.'],467:['எண்ணித் துணிக கருமம் துணிந்தபின்','எண்ணுவம் என்பது இழுக்கு.'],1031:['சுழன்றும்ஏர்ப் பின்னது உலகம் அதனால்','உழந்தும் உழவே தலை.']};
+const KURAL_LAYER={423:'Judge & prediction scoring – trust the truth, not the speaker',467:'Fear / caution layer – think first, then act',391:'Learning – learn fully, then live by it',1031:'Values – respect land and work'};
+const PAL=n=>n<=380?'அறத்துப்பால் (Virtue)':n<=1080?'பொருட்பால் (Wealth)':'காமத்துப்பால் (Love)';
+function kuralGet(n){n=+n;if(S.kural&&S.kural.n[n-1])return S.kural.n[n-1];return KURAL_SEED[n]||null;}
+function kuralText(n){const k=kuralGet(n);if(!k)return null;const ch=Math.ceil(n/10),cn=S.kural&&S.kural.ch&&S.kural.ch[ch];
+  return`📜 குறள் ${n} · ${PAL(n)} · அதிகாரம் ${ch}${cn?' – '+cn:''}\n${k[0]}\n${k[1]}${KURAL_LAYER[n]?'\n🧭 In my mind: '+KURAL_LAYER[n]:''}`;}
+function kuralCount(){return S.kural?S.kural.n.filter(Boolean).length:Object.keys(KURAL_SEED).length;}
+function kuralSearch(q){const all=S.kural?S.kural.n.map((k,i)=>({n:i+1,t:k?k.join(' '):''})).filter(x=>x.t):Object.entries(KURAL_SEED).map(([n,k])=>({n:+n,t:k.join(' ')}));
+  const h=tfidfSearch(q,all,x=>x.t+' '+(KURAL_LAYER[x.n]||''),3);return h.map(r=>r.it.n);}
+function kuralOfDay(){const d=Math.floor(Date.now()/864e5);if(S.kural)return(d%1330)+1;const ks=Object.keys(KURAL_SEED);return+ks[d%ks.length];}
+function kuralAccept(arr,ch,src){const n=new Array(1330).fill(null);arr.forEach(([num,l1,l2])=>{if(num>=1&&num<=1330&&l1)n[num-1]=[String(l1).trim(),String(l2||'').trim()];});
+  const got=n.filter(Boolean).length;if(got<1000)return{ok:false,why:'only '+got+' kurals found – this does not look like the full Thirukkural'};
+  S.kural={n,ch:ch||{},src,at:Date.now()};save();renderTamil();return{ok:true,got};}
+function parseKuralJSON(j){const L=Array.isArray(j)?j:(j.kural||j.kurals||j.data||[]);const arr=L.map(k=>{const num=+(k.Number||k.number||k.ID||k.id||k['0_number']);let l1=k.Line1||k.line1||k['1_line1'],l2=k.Line2||k.line2||k['1_line2'];if(!l1&&(k.Kural||k.kural)){const p=String(k.Kural||k.kural).split(/\n/);l1=p[0];l2=p.slice(1).join(' ');}return[num,l1,l2];});
+  const ch={};L.forEach(k=>{const num=+(k.Number||k.number||k.ID||k.id||k['0_number']),a=k.adhikaram||k.Adhigaram||k['2_adikaram']||k.chapter;if(num&&a&&typeof a==='string')ch[Math.ceil(num/10)]=a;});return{arr,ch};}
+function parseKuralHTML(html){const doc=new DOMParser().parseFromString(html,'text/html'),tw=doc.createTreeWalker(doc.body,NodeFilter.SHOW_TEXT),bits=[];while(tw.nextNode())bits.push(tw.currentNode.nodeValue);const txt=(bits.join(' ')||html).replace(/\s+/g,' ');const ch={};let m;
+  doc.querySelectorAll('h1,h2,h3,h4,h5,b,strong,font,p,div,td').forEach(el=>{if(el.children.length>2)return;const hm=(el.textContent||'').trim().match(/^\d\.\d+\.(\d+)\.?\s+([\u0B80-\u0BFF][\u0B80-\u0BFF\s]{1,40})$/);if(hm)ch[+hm[1]]=hm[2].trim();});
+  const hre=/(\d)\.(\d+)\.(\d+)\.?\s+([஀-௿][஀-௿\s]{1,40}?)(?=\s[஀-௿])/g;   /* headings like 1.1.3 நீத்தார் பெருமை */
+  if(!Object.keys(ch).length)while((m=hre.exec(txt)))ch[+m[3]]=m[4].trim();
+  const arr=[];let pos=txt.indexOf('அகர முதல');if(pos<0)return{arr,ch};
+  for(let n=1;n<=1330;n++){const re=new RegExp('[.\\s]'+n+'(?=\\s|$)','g');re.lastIndex=pos;const f=re.exec(txt);if(!f)break;let body=txt.slice(pos,f.index+1).replace(/\d+\.\d+(\.\d+)?\.?\s+[஀-௿\s]*?(?=[஀-௿]+\s)/g,' ').replace(/[0-9]/g,'').replace(/\s+/g,' ').trim();
+    const w=body.split(' ').filter(x=>/[஀-௿]/.test(x));const last7=w.slice(-7);arr.push([n,last7.slice(0,4).join(' '),last7.slice(4).join(' ')]);pos=f.index+f[0].length;}
+  return{arr,ch};}
+const KURAL_URLS=['https://raw.githubusercontent.com/tk120404/thirukkural/master/thirukkural.json','https://raw.githubusercontent.com/tk120404/thirukkural/main/thirukkural.json'];
+async function kuralDownload(out){for(const u of KURAL_URLS){try{out.textContent='⏳ Downloading from '+u.replace('https://','')+' …';const r=await fetch(u);if(!r.ok)continue;const j=await r.json();const p=parseKuralJSON(j);const a=kuralAccept(p.arr,p.ch,'GitHub tk120404/thirukkural (Apache-2.0) – Tamil text only');
+    if(a.ok){out.textContent='✅ Thirukkural loaded: '+a.got+' kurals, saved on this device. Try “kural 391” or “kural about learning”.';return true;}}catch(e){}}
+  out.innerHTML='❌ Could not download automatically (no internet, or the copy moved). Download the full text yourself from <a href="https://www.projectmadurai.org/pm_etexts/utf8/pmuni0001.html" target="_blank">Project Madurai</a> (File → Save page as .html) and load it with the button below.';return false;}
+const HERITAGE=[
+ ['Kallanai (Grand Anicut)','Built by Karikala Chola around the 2nd century CE with unshaped stones on the sandy Kaveri bed; still in use – one of the oldest working water-control structures.','proven'],
+ ['Thanjavur Brihadeeswarar (Big) Temple','Completed by Rajaraja Chola I in 1010 CE; granite vimana about 66 m tall. The “no shadow at noon” story is a myth – it does cast a shadow.','proven (shadow claim: myth)'],
+ ['Wootz steel','High-carbon crucible steel made in South India (sites such as Kodumanal) and traded abroad.','proven'],
+ ['Eri (tank) systems','Chains of village tanks with kumizhi sluices, maintained by the community (kudimaramathu).','proven'],
+ ['Keezhadi','Urban Sangam-era settlement on the Vaigai: brick buildings, Tamil-Brahmi writing on pottery; Tamil Nadu archaeologists date some layers to about the 6th century BCE.','proven (exact dates still studied)'],
+ ['Puhar (Kaveripoompattinam)','Chola port city described in Silappatikaram and Pattinappalai; parts lie under the sea today.','literary + archaeological'],
+ ['Silappatikaram','Epic by Ilango Adigal: Kovalan, Kannagi, Madhavi, the anklet (silambu), justice in Madurai. Lessons: rulers who fail in justice meet dharma as death; the virtuous are honoured; past deeds bear fruit.','literary']];
+function renderTamil(){if(!$('kstat'))return;$('kstat').textContent=S.kural?'📜 Full Thirukkural on this device: '+kuralCount()+' kurals · source: '+S.kural.src:'📜 Built-in: '+kuralCount()+' verified kurals. Download the full 1,330 below.';
+  $('kday').textContent=kuralText(kuralOfDay())||'';$('hcards').innerHTML=HERITAGE.map(([t,d,l])=>`<div class="it"><span><b>${esc(t)}</b> <span class="pill ${/myth|legend/.test(l)?'v-not':/literary/.test(l)?'v-not':'v-pos'}">${esc(l)}</span><br><span class="mu">${esc(d)}</span></span></div>`).join('');}
+
+
+/* ================= WAVES LAB: sound + light =================
+ * Sound: Web Audio oscillators (design, play, beats/interference), microphone spectrum (Chella Kutty hears pitch).
+ * Light: wavelength → colour, frequency, photon energy; the same wave picture, a million-million times faster. */
+let AC=null,OSC=[],GAIN=null,ANA=null,MIC=null,micRAF=0;
+const C_LIGHT=299792458,V_SOUND=343;
+const NOTE=['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
+const noteOf=f=>{if(f<16)return'below hearing';const n=Math.round(12*Math.log2(f/440))+57;return NOTE[((n%12)+12)%12]+Math.floor(n/12);};
+function audio(){if(!AC){AC=new (window.AudioContext||window.webkitAudioContext)();GAIN=AC.createGain();ANA=AC.createAnalyser();ANA.fftSize=2048;GAIN.connect(ANA);ANA.connect(AC.destination);}if(AC.state==='suspended')AC.resume();return AC;}
+function soundStop(){OSC.forEach(o=>{try{o.stop();}catch(e){}});OSC=[];drawWave();}
+function soundPlay(f1,type,vol,f2){audio();soundStop();const v=Math.min(0.3,vol);GAIN.gain.setValueAtTime(0,AC.currentTime);GAIN.gain.linearRampToValueAtTime(v,AC.currentTime+0.05);   /* soft start, capped volume to protect ears and speakers */
+  [f1,f2].filter(x=>x>0).forEach(f=>{const o=AC.createOscillator();o.type=type;o.frequency.value=f;o.connect(GAIN);o.start();OSC.push(o);});drawWave();
+  const t=setTimeout(soundStop,8000);OSC.forEach(o=>o.onended=()=>clearTimeout(t));}
+function soundInfo(f,f2){const lam=V_SOUND/f;let s=`${f} Hz · note ${noteOf(f)} · wavelength in air ${lam>=1?lam.toFixed(2)+' m':(lam*100).toFixed(1)+' cm'} · ${f} pushes of air every second`;
+  if(f2)s+=`\nTwo waves ${f} Hz + ${f2} Hz → you hear a “wah-wah” beat ${Math.abs(f-f2)} times a second – that is interference: crests add up, then cancel.`;
+  if(f<=60)s+='\n🔥 30–60 Hz is the range the George Mason students used to blow small flames out. Phone and laptop speakers mostly cannot produce such deep bass – you may hear little. Never test on real fire at home.';
+  if(f<20)s+='\nBelow 20 Hz is infrasound – humans cannot hear it (elephants and whales use it).';if(f>20000)s+='\nAbove 20,000 Hz is ultrasound – used by bats and hospital scans.';return s;}
+function lightOf(nm){const f=C_LIGHT/(nm*1e-9),eV=1239.84/nm;let band,col;
+  if(nm<10)band='X-ray';else if(nm<380)band='Ultraviolet (invisible, causes sunburn)';else if(nm<=750)band='Visible light';else if(nm<1e6)band='Infrared (invisible heat, TV remotes)';else band='Microwave / radio';
+  const w=nm;let r=0,g=0,b=0;if(w>=380&&w<440){r=-(w-440)/60;b=1;}else if(w<490){g=(w-440)/50;b=1;}else if(w<510){g=1;b=-(w-510)/20;}else if(w<580){r=(w-510)/70;g=1;}else if(w<645){r=1;g=-(w-645)/65;}else if(w<=750){r=1;}
+  const fade=w<420?0.3+0.7*(w-380)/40:w>700?0.3+0.7*(750-w)/50:1,cc=x=>Math.round(255*Math.pow(Math.max(0,x*fade),0.8));col=(w>=380&&w<=750)?`rgb(${cc(r)},${cc(g)},${cc(b)})`:'#333';
+  const name=w<380?'—':w<450?'violet':w<495?'blue':w<570?'green':w<590?'yellow':w<620?'orange':w<=750?'red':'—';
+  return{f,eV,band,col,name,txt:`${nm} nm · ${name!=='—'?name+' · ':''}${band}\nfrequency ${(f/1e12).toFixed(0)} trillion waves per second (${(f/1e12).toFixed(0)} THz) · each photon carries ${eV.toFixed(2)} eV of energy\nLight is ${Math.round(C_LIGHT/V_SOUND).toLocaleString()}× faster than sound and needs no air – it crosses empty space from the Sun in about 8 minutes.`};}
+function drawWave(){const cv=$('wcv');if(!cv)return;const g=cv.getContext('2d'),W=cv.width,H=cv.height;g.clearRect(0,0,W,H);g.strokeStyle='#1d2a40';g.beginPath();g.moveTo(0,H/2);g.lineTo(W,H/2);g.stroke();
+  const f1=+$('wf').value,f2=$('wbeat').checked?+$('wf2').value:0,type=$('wtype').value,span=Math.max(3/f1,f2?2.2/Math.max(1,Math.abs(f1-f2)):0);   /* show a few cycles, or one beat */
+  const sh=(ph)=>{const p=ph-Math.floor(ph);return type==='square'?(p<0.5?1:-1):type==='sawtooth'?2*p-1:type==='triangle'?1-4*Math.abs(p-0.5):Math.sin(2*Math.PI*ph);};
+  const draw=(fn,col,lw)=>{g.strokeStyle=col;g.lineWidth=lw;g.beginPath();for(let x=0;x<=W;x++){const t=x/W*span,y=H/2-fn(t)*H*0.38;x?g.lineTo(x,y):g.moveTo(x,y);}g.stroke();};
+  if(f2){draw(t=>sh(f1*t)*0.5,'rgba(56,225,255,.35)',1);draw(t=>sh(f2*t)*0.5,'rgba(255,194,74,.35)',1);draw(t=>(sh(f1*t)+sh(f2*t))*0.5,'#ff6b6b',2);}else draw(t=>sh(f1*t),'#38e1ff',2);
+  g.fillStyle='#7f93ad';g.font='11px system-ui';g.fillText((span*1000).toFixed(span<0.01?2:0)+' ms shown',6,H-6);}
+function drawLight(){const nm=+$('lnm').value,L=lightOf(nm),cv=$('lcv'),g=cv.getContext('2d'),W=cv.width,H=cv.height;g.clearRect(0,0,W,H);
+  for(let x=0;x<W;x++){const w=380+370*x/W;g.fillStyle=lightOf(w).col;g.fillRect(x,H-14,1,14);}const px=(nm-380)/370*W;if(nm>=380&&nm<=750){g.fillStyle='#fff';g.fillRect(px-1,H-18,2,18);}
+  const cycles=Math.max(2,Math.min(14,5*550/nm));g.strokeStyle=nm>=380&&nm<=750?L.col:'#7f93ad';g.lineWidth=2.5;g.beginPath();for(let x=0;x<=W;x++){const y=(H-20)/2-Math.sin(2*Math.PI*cycles*x/W)*(H-30)*0.4;x?g.lineTo(x,y):g.moveTo(x,y);}g.stroke();
+  $('lsw').style.background=L.col;$('linfo').textContent=L.txt;}
+async function micStart(){try{audio();if(MIC){micStop();return;}const st=await navigator.mediaDevices.getUserMedia({audio:true});MIC={st,src:AC.createMediaStreamSource(st),an:AC.createAnalyser()};MIC.an.fftSize=8192;MIC.src.connect(MIC.an);$('wmic').textContent='⏹ Stop listening';
+  const buf=new Float32Array(MIC.an.frequencyBinCount),cv=$('wspec'),g=cv.getContext('2d');
+  const loop=()=>{MIC.an.getFloatFrequencyData(buf);const W=cv.width,H=cv.height;g.clearRect(0,0,W,H);let best=0,bi=0;const hz=AC.sampleRate/MIC.an.fftSize,maxBin=Math.floor(2000/hz);
+    g.fillStyle='#38e1ff';for(let i=2;i<maxBin;i++){const v=Math.max(0,(buf[i]+100)/80);if(buf[i]>best||i===2){best=buf[i];bi=i;}g.fillRect(i/maxBin*W,H-v*H,Math.max(1,W/maxBin),v*H);}
+    const f=bi*hz;$('wheard').textContent=best>-70?`👂 I hear about ${Math.round(f)} Hz – note ${noteOf(f)} (loudest pitch, 0–2000 Hz shown)`:'👂 Listening… make a sound, hum or whistle';mood=best>-70?'listen':'idle';micRAF=requestAnimationFrame(loop);};loop();}
+  catch(e){$('wheard').textContent='Microphone refused or not available: '+e.message;}}
+function micStop(){if(!MIC)return;cancelAnimationFrame(micRAF);MIC.st.getTracks().forEach(t=>t.stop());MIC=null;mood='idle';$('wmic').textContent='👂 Let Chella Kutty hear';}
+
+
+/* ================= SIDDHAR WAVES: breath (vasi), sound (nadam), light (jothi) =================
+ * Breath pacer: a slow wave you follow – sound + light rise and fall together (about 6 breaths a minute, longer out-breath).
+ * Nadam practice: the microphone measures how steady and long your chant (e.g. Om) is, then the session fades into silence.
+ * Labels: tradition (Thirumanthiram, Siddhar songs) vs. modern evidence – kept apart, as in the prediction layer. */
+let BR={on:false,t0:0,raf:0,osc:null,g:null},NADA={on:false,raf:0,samples:[],start:0};
+function breathStart(){const bpm=+$('bbpm').value,ratio=+$('bratio').value,T=60/bpm,tin=T/(1+ratio);audio();if(BR.on)breathStop();
+  BR={on:true,t0:performance.now(),raf:0,osc:AC.createOscillator(),g:AC.createGain(),T,tin,end:performance.now()+(+$('bmin').value)*60e3};
+  BR.osc.type='sine';BR.osc.frequency.value=+$('btone').value;BR.g.gain.value=0;BR.osc.connect(BR.g);BR.g.connect(AC.destination);BR.osc.start();$('bgo').textContent='⏹ Stop';
+  const cv=$('bcv'),g=cv.getContext('2d');
+  const loop=()=>{const now=performance.now(),t=((now-BR.t0)/1000)%BR.T,inh=t<BR.tin,ph=inh?t/BR.tin:1-(t-BR.tin)/(BR.T-BR.tin),lvl=0.5-0.5*Math.cos(Math.PI*ph);
+    if($('bsound').checked)BR.g.gain.setTargetAtTime(0.02+0.06*lvl,AC.currentTime,0.1);else BR.g.gain.setTargetAtTime(0,AC.currentTime,0.1);
+    const W=cv.width,H=cv.height;g.clearRect(0,0,W,H);const r=30+lvl*(H/2-40);const gr=g.createRadialGradient(W/2,H/2,4,W/2,H/2,r);gr.addColorStop(0,'rgba(255,214,120,.95)');gr.addColorStop(1,'rgba(56,225,255,0)');g.fillStyle=gr;g.beginPath();g.arc(W/2,H/2,r,0,7);g.fill();
+    g.fillStyle='#dbe7f5';g.font='18px system-ui';g.textAlign='center';g.fillText(inh?'Breathe in…':'Breathe out…',W/2,H-14);mood=inh?'listen':'idle';
+    const left=Math.max(0,BR.end-now);$('binfo').textContent=`${(60/BR.T).toFixed(1)} breaths a minute · in ${BR.tin.toFixed(1)} s · out ${(BR.T-BR.tin).toFixed(1)} s · ${Math.ceil(left/60e3)} min left`;
+    if(left<=0){breathStop();say('🌬 Breathing session finished. Sit quietly for a moment – Thirumoolar describes the practice flowing from inner sound into silence.',{tag:'🧘 vasi'});return;}BR.raf=requestAnimationFrame(loop);};loop();}
+function breathStop(){if(!BR.on)return;cancelAnimationFrame(BR.raf);try{BR.g.gain.setTargetAtTime(0,AC.currentTime,0.2);BR.osc.stop(AC.currentTime+0.6);}catch(e){}BR.on=false;mood='idle';$('bgo').textContent='▶ Start breathing';}
+async function nadaStart(){if(NADA.on){nadaStop();return;}try{audio();const st=await navigator.mediaDevices.getUserMedia({audio:true}),src=AC.createMediaStreamSource(st),an=AC.createAnalyser();an.fftSize=8192;src.connect(an);
+  NADA={on:true,st,an,samples:[],start:performance.now(),raf:0};$('ngo').textContent='⏹ Finish';const buf=new Float32Array(an.frequencyBinCount),hz=AC.sampleRate/an.fftSize;
+  const loop=()=>{an.getFloatFrequencyData(buf);let best=-200,bi=0;for(let i=Math.floor(70/hz);i<Math.floor(600/hz);i++)if(buf[i]>best){best=buf[i];bi=i;}
+    const t=(performance.now()-NADA.start)/1000;if(best>-60)NADA.samples.push({t,f:bi*hz});$('ninfo').textContent=best>-60?`🎵 ${Math.round(bi*hz)} Hz (${noteOf(bi*hz)}) · ${t.toFixed(0)} s`:`… ${t.toFixed(0)} s – chant “ஓம்” / Om slowly in one steady tone`;NADA.raf=requestAnimationFrame(loop);};loop();}
+  catch(e){$('ninfo').textContent='Microphone needed: '+e.message;}}
+function nadaStop(){if(!NADA.on)return;cancelAnimationFrame(NADA.raf);NADA.st.getTracks().forEach(t=>t.stop());NADA.on=false;$('ngo').textContent='🎵 Start nadam practice';
+  const S2=NADA.samples;if(S2.length<20){$('ninfo').textContent='Too short to measure – try a longer, steady chant.';return;}
+  const fs=S2.map(x=>x.f).sort((a,b)=>a-b),med=fs[Math.floor(fs.length/2)],steady=S2.filter(x=>Math.abs(1200*Math.log2(x.f/med))<50).length/S2.length;   /* within half a semitone */
+  let runs=[],cur=null;S2.forEach(x=>{if(cur&&x.t-cur.e<0.4)cur.e=x.t;else{cur={s:x.t,e:x.t};runs.push(cur);}});const longest=Math.max(...runs.map(r=>r.e-r.s));
+  const res=`🎵 Your nadam: centre pitch ${Math.round(med)} Hz (${noteOf(med)}) · steadiness ${Math.round(steady*100)}% · longest unbroken tone ${longest.toFixed(1)} s · ${runs.length} chant(s)`;$('ninfo').textContent=res;
+  S.nada=(S.nada||[]).concat([{d:Date.now(),f:Math.round(med),st:Math.round(steady*100),long:+longest.toFixed(1)}]).slice(-60);save();const H=S.nada;if(H.length>1){const p=H[H.length-2];$('ninfo').textContent+=`\nLast time: steadiness ${p.st}%, longest ${p.long} s – ${steady*100>p.st?'steadier today 👍':'keep practising'}.`;}}
+const SIDDHA_CARDS=[
+ ['The 18 Siddhars','Lists differ between traditions. A common one (Abithana Chintamani) includes Nandi, Thirumoolar, Agathiyar, Kamalamuni, Patanjali, Korakkar, Sundaranandar, Konganar, Sattaimuni, Valmiki, Ramadevar, Dhanvantari, Idaikkadar, Machamuni, Karuvoorar, Bogar, Pambatti and Kuthambai. Another 18 are linked to the nine planets (navagraha).','history'],
+ ['Thirumoolar – Thirumanthiram','Earliest known Tamil treatise on yoga; 14 verses on breath control (pranayama). Describes meditation moving from inner sounds (nadam) to silence, and the body as a temple – a sound mind in a sound body.','literature'],
+ ['Nadam and bindu','In Siddha and Tantric thought, creation begins as a first vibration (nadam, sound) that condenses into a point (bindu). This is a spiritual teaching, not a physics measurement.','tradition'],
+ ['Sivavakkiyar & Pambatti Siddhar','Questioned blind ritual, caste and idol worship; taught inner realisation (“உள்ளே சிவம்”). Their spirit of questioning matches Chella Kutty’s Judge layer: test before believing.','literature'],
+ ['Slow breathing today','Modern studies: breathing about 6 times a minute (“resonance breathing”) raises heart-rate variability and helps relaxation; a longer out-breath helps further. This is measured science – it does not prove the spiritual claims of siddhis.','science'],
+ ['Pulippani Jothidam','A Siddhar astrology work of about 300 verses, linked by tradition to Pulippani, disciple of Bogar. Astrology is cultural belief, not proven by science; Chella Kutty keeps any prediction from it on the scoreboard like every other source.','tradition']];
+function renderSiddha(){if(!$('scards'))return;$('scards').innerHTML=SIDDHA_CARDS.map(([t,d,l])=>`<div class="it"><span><b>${esc(t)}</b> <span class="pill ${l==='science'?'v-pos':'v-not'}">${l}</span><br><span class="mu">${esc(d)}</span></span></div>`).join('');}
+
+
+/* ================= REPRODUCTION: self-upgrade by copies of itself =================
+ * Clone + mutate (mitosis) and crossover of the two best (sexual reproduction) → children tested on one exam →
+ * natural selection → the best child replaces the parent only if it scores higher AND the user approves. Family tree kept. */
+const EXAM=[['please keep in mind that my bank is in town','remember'],['note down that the meeting is on monday','remember'],['save that my locker code is near the door','remember'],
+ ['where did i keep my keys','recall'],['what did i tell you about my bike','recall'],['do you know my wife birthday','recall'],
+ ['put buy rice on my list','task_add'],['i must finish the survey report','task_add'],['create a todo to visit the bank','task_add'],
+ ['show me what is pending','task_list'],['what is on my plate today','task_list'],['list my tasks please','task_list'],
+ ['remind me in 5 minutes to check the milk','remind'],['set an alarm reminder at 9 pm to pray','remind'],['tomorrow 6 am remind me to walk','remind'],
+ ['explain the right to information act','teach'],['teach me how rainbows form','teach'],['what is gravity','teach'],
+ ['test my knowledge of history','quiz'],['give me some questions on polity','quiz'],['take a small quiz on science','quiz'],
+ ['open the gi viewer','open'],['search youtube for tamil songs','open'],['find this on indian kanoon','open'],
+ ['how could we invent a cooler house','invent'],['new idea for saving water','invent'],['is teleportation possible','invent'],
+ ['what is 12 times 12','calc'],['convert 2 acres into cents','calc'],['how many square feet in 5 cents','calc'],
+ ['tell me the time','time'],['which day is it today','time'],['vanakkam arivu','greet'],['good evening','greet'],['i feel lonely today','chat'],['say something funny','chat']];
+S.family=S.family||[];
+const gq=(k,v)=>{const[a,b,st]=GENE_DEF[k];return Math.min(b,Math.max(a,Math.round(v/st)*st));};
+function mutate(G,rate){const c=Object.assign({},G);Object.keys(GENE_DEF).forEach(k=>{if(Math.random()<rate){const[a,b]=GENE_DEF[k];c[k]=gq(k,c[k]+(Math.random()*2-1)*(b-a)*0.2);}});return c;}
+function crossover(A,B){const c={};Object.keys(GENE_DEF).forEach(k=>c[k]=Math.random()<0.5?A[k]:B[k]);return c;}
+function selfQuiz(G){const F=MIND.facts.filter(f=>!f.old&&['in','is','on','likes'].includes(f.r)).slice(-12);if(F.length<3)return null;let ok=0;
+  const keep=S.genome.match;S.genome.match=G.match;F.forEach(f=>{const q=(f.r==='in'?'where is my ':f.r==='on'?'when is my ':f.r==='likes'?'what does '+'':'what is my ')+f.s+(f.r==='likes'?' like':'');const r=mindAsk(q);if(r&&r.text.toLowerCase().includes(f.o.toLowerCase()))ok++;});S.genome.match=keep;return ok/F.length;}
+function fitness(G){RNG=seeded(20261121);const net=trainNet(G);RNG=Math.random;   /* same starting luck for every child, so only the genes decide */
+ let ok=0;EXAM.forEach(([t,i])=>{const p=netRun(feat(t,G),net).p;if(INTENTS[p.indexOf(Math.max(...p))]===i)ok++;});
+  const ex=ok/EXAM.length,sq=selfQuiz(G),fit=sq==null?ex:0.8*ex+0.2*sq;return{fit,ex,sq,net};}
+async function evolve(gens,pop,log){const parent=Object.assign({},S.genome);const pf=fitness(parent);let best={G:parent,...pf,id:parent.id||'adam',how:'parent'};
+  log(`👪 Parent “${best.id}” scores ${(pf.fit*100).toFixed(1)}% (exam ${(pf.ex*100).toFixed(0)}%${pf.sq!=null?', memory quiz '+(pf.sq*100).toFixed(0)+'%':''})`);let elite=[best],kids=[];
+  for(let g=1;g<=gens;g++){kids=[];for(let i=0;i<pop;i++){await new Promise(r=>setTimeout(r,0));const sex=elite.length>1&&i%2===1;const G=sex?mutate(crossover(elite[0].G,elite[1].G),0.2):mutate(elite[i%elite.length].G,0.5);
+      const f=fitness(G),id='g'+(S.genome.gen+g)+'-'+String.fromCharCode(97+i);kids.push({G,...f,id,how:sex?'crossover of '+elite[0].id+' × '+elite[1].id:'clone+mutation of '+elite[i%elite.length].id});
+      log(`  ${sex?'💞':'🧫'} child ${id} (${kids.at(-1).how}): ${(f.fit*100).toFixed(1)}%`);}
+    elite=[...elite,...kids].sort((a,b)=>b.fit-a.fit).slice(0,2);log(`⭐ Generation ${g} best: ${elite[0].id} ${(elite[0].fit*100).toFixed(1)}%`);}
+  return{parent:{fit:pf.fit,ex:pf.ex,sq:pf.sq,id:best.id},best:elite[0]};}
+function adopt(child){S.family.push({at:Date.now(),from:S.genome,fromFit:child.parentFit,to:Object.assign({},child.G),toFit:child.fit,id:child.id,how:child.how});
+  S.genome=Object.assign({},child.G,{gen:(S.genome.gen||0)+1,id:child.id});NET=child.net;save();train();renderFamily();}
+function rollback(i){const f=S.family[i];if(!f)return;S.genome=Object.assign({},f.from);S.family.push({at:Date.now(),from:f.to,to:f.from,id:f.from.id||'adam',how:'rollback'});save();train();renderFamily();}
+function renderFamily(){if(!$('ftree'))return;const G=S.genome;$('fgen').textContent=`Current DNA: ${G.id} · generation ${G.gen} · hidden ${G.hid} · rounds ${G.ep} · speed ${(+G.lr).toFixed(2)} · letters ${(+G.tri).toFixed(2)} · word-pairs ${(+G.bi).toFixed(2)} · match ${(+G.match).toFixed(2)}`;
+  $('ftree').innerHTML=S.family.length?S.family.slice().reverse().slice(0,12).map((f,j)=>{const i=S.family.length-1-j;return`<div class="it"><span>🧬 ${new Date(f.at).toLocaleString('en-IN',{day:'numeric',month:'short',hour:'numeric',minute:'2-digit'})} · ${esc(f.from.id||'adam')} → <b>${esc(f.id)}</b> <span class="mu">${esc(f.how)}${f.toFit!=null?' · '+(f.fromFit*100).toFixed(1)+'% → '+(f.toFit*100).toFixed(1)+'%':''}</span></span>${f.how!=='rollback'?`<span class="x" data-rb="${i}">↩ go back</span>`:''}</div>`;}).join(''):'<p class="mu">No children adopted yet – this is the first ancestor (“adam”).</p>';}
+
+/* ================= OFFLINE BRAIN (BitNet b1.58 on WebGPU) ================= */
+const LOCAL={model:null,busy:false,url:'https://huggingface.co/microsoft/bitnet-b1.58-2B-4T-gguf/resolve/main/ggml-model-i2_s.gguf'};
+function lstat(t){$('lstat').innerHTML=t;bigStatus();}
+async function localCheck(){if(!navigator.gpu){lstat('❌ This browser has no WebGPU. Use Chrome or Edge (version 113+) on a laptop; on phones it works only on some new Android phones.');return false;}
+  try{const a=await navigator.gpu.requestAdapter();if(!a){lstat('❌ WebGPU is there but no graphics chip answered. Update Chrome / the graphics driver.');return false;}
+    const lim=a.limits||{},mb=Math.round((lim.maxBufferSize||0)/1048576),info=a.info||{};lstat('✅ WebGPU ready'+(info.vendor?' – '+esc(info.vendor+' '+(info.architecture||'')):'')+' · biggest memory block '+mb+' MB'+(mb&&mb<700?' ⚠ may be too small for the 2-billion brain':'')+'. Press 2 to download.');return true;}
+  catch(e){lstat('❌ '+esc(e.message));return false;}}
+async function localLoad(){if(LOCAL.model||LOCAL.busy)return;if(!await localCheck())return;LOCAL.busy=true;mood='think';
+  try{lstat('⏳ Getting the BitNet engine…');const mod=await import('https://esm.sh/0xbitnet');const BitNet=mod.BitNet||(mod.default&&mod.default.BitNet)||mod.default;
+    LOCAL.model=await BitNet.load(LOCAL.url,{onProgress:p=>lstat('⏳ '+esc(p.phase||'loading')+': '+((p.fraction||0)*100).toFixed(1)+'% (first time ≈1 GB download, later from storage)')});
+    localStorage.setItem('nsk_arivu_local','1');lstat('🧬 Offline brain is AWAKE – 2 billion three-letter connections running on your graphics chip. Questions without the online key now go to it.');say('🧬 My offline brain is awake. I can now think without internet.');}
+  catch(e){LOCAL.model=null;lstat('❌ Could not wake it: '+esc(e.message||e)+' – needs internet for the first download, and enough graphics memory.');}
+  LOCAL.busy=false;mood='idle';}
+async function localThink(system,hist,prompt,max){if(!LOCAL.model)return null;mood='think';let out='';
+  try{const msgs=[{role:'system',content:system.slice(0,3000)}].concat(hist.slice(-4),[{role:'user',content:prompt}]);for await(const tk of LOCAL.model.generate(msgs,{maxTokens:Math.min(max||400,600),temperature:0.6}))out+=tk;mood='idle';return{text:out.trim()+'\n\n(🧬 offline brain – check important facts)',local:true};}
+  catch(e){mood='idle';return{err:'offline brain: '+e.message};}}
+$('lcheck').onclick=localCheck;$('lload').onclick=localLoad;$('loff').onclick=()=>{try{LOCAL.model&&LOCAL.model.dispose();}catch(e){}LOCAL.model=null;localStorage.removeItem('nsk_arivu_local');lstat('Offline brain: sleeping (its download stays in storage for next time).');};
+
+/* ================= CHAT LOG ================= */
+function addMsg(r,html,meta){const d=document.createElement('div');d.className='m '+(r==='u'?'u':'a');d.innerHTML=html;$('log').appendChild(d);$('log').scrollTop=1e9;return d;}
+function say(text,opt={}){const d=addMsg('a',(opt.tag?'<span class="tag">'+esc(opt.tag)+'</span>':'')+(opt.html||esc(text)));
+  if(opt.q){const f=document.createElement('div');f.className='fix';f.innerHTML='understood as “'+opt.intent+'” · <a>wrong?</a>';f.querySelector('a').onclick=()=>teachIntent(opt.q,f);d.appendChild(f);}
+  S.chat.push({r:'a',t:String(text).slice(0,2000)});if(S.chat.length>60)S.chat.splice(0,S.chat.length-60);save();speak(text);return d;}
+function teachIntent(q,f){f.innerHTML='It should be: '+INTENTS.map(i=>'<a data-i="'+i+'">'+i+'</a>').join(' · ');f.querySelectorAll('a').forEach(a=>a.onclick=()=>{S.examples.push({t:q,i:a.dataset.i});save();train();f.textContent='✔ learnt – next time “'+q+'” means '+a.dataset.i+'. Doing it now…';handle(q,true);});}
+
+/* ================= TIME PARSER ================= */
+function parseWhen(s){s=s.toLowerCase();const now=new Date();let m;
+  if(m=s.match(/in\s+(\d+(?:\.\d+)?)\s*(min|minute|minutes|mins|hour|hours|hr|hrs|sec|seconds|day|days)/)){const n=+m[1],u=m[2];return new Date(+now+n*(/^h/.test(u)?3600e3:/^d/.test(u)?864e5:/^s/.test(u)?1e3:60e3));}
+  if(m=s.match(/(\d{1,2})(?::|\.)?(\d{2})?\s*(am|pm|மணி)?/)){if(!/(am|pm|at|மணி|o'?clock)/.test(s)&&!m[2])return null;let h=+m[1],mi=+(m[2]||0);if(m[3]==='pm'&&h<12)h+=12;if(m[3]==='am'&&h===12)h=0;
+    const d=new Date(now);d.setHours(h,mi,0,0);if(/tomorrow|நாளை/.test(s))d.setDate(d.getDate()+1);else if(d<=now)d.setDate(d.getDate()+1);return d;}
+  if(/tomorrow|நாளை/.test(s)){const d=new Date(now);d.setDate(d.getDate()+1);d.setHours(9,0,0,0);return d;}return null;}
+const fmt=d=>d.toLocaleString('en-IN',{weekday:'short',day:'numeric',month:'short',hour:'numeric',minute:'2-digit'});
+const timers={};function arm(t){if(!t.when||t.done||timers[t.id])return;const ms=new Date(t.when)-Date.now();if(ms<0||ms>2147483647)return;
+  timers[t.id]=setTimeout(()=>{delete timers[t.id];const msg='⏰ Reminder: '+t.text;say(msg,{tag:'reminder'});try{if(Notification.permission==='granted')new Notification('Chella Kutty',{body:t.text});}catch(e){}renderTasks();},ms);}
+
+/* ================= CALCULATOR + LAND UNITS ================= */
+const UNIT={sqm:1,'sq m':1,'square metre':1,'square meter':1,cent:40.4686,cents:40.4686,acre:4046.86,acres:4046.86,hectare:10000,hectares:10000,ha:10000,'sq ft':0.092903,sqft:0.092903,'square feet':0.092903,ground:222.967,grounds:222.967,are:100,ares:100,metre:1,meter:1,m:1,km:1000,feet:0.3048,ft:0.3048,foot:0.3048,link:0.201168,links:0.201168,chain:20.1168,chains:20.1168,mile:1609.34,miles:1609.34,inch:0.0254,inches:0.0254};
+const AREA=new Set(['sqm','sq m','square metre','square meter','cent','cents','acre','acres','hectare','hectares','ha','sq ft','sqft','square feet','ground','grounds','are','ares']);
+function calc(q){let s=q.toLowerCase().replace(/,/g,'');let m;
+  if(m=s.match(/([\d.]+)\s*([a-z ]+?)\s+(?:to|in|into)\s+([a-z ]+)/)||(m=s.match(/how many\s+([a-z ]+?)\s+(?:in|are in)\s+([\d.]+)\s*([a-z ]+)/))&&(m=[m[0],m[2],m[3],m[1]])){
+    const v=+m[1],a=m[2].trim().replace(/^square /,'sq '),b=m[3].trim().replace(/\?$/,'').replace(/^square /,'sq ');const ua=UNIT[a]||UNIT[a.replace(/s$/,'')],ub=UNIT[b]||UNIT[b.replace(/s$/,'')];
+    if(ua&&ub){if(AREA.has(a)!==AREA.has(b)&&!(AREA.has(a.replace(/s$/,''))===AREA.has(b.replace(/s$/,''))))return null;const r=v*ua/ub;return `${v} ${a} = ${+r.toFixed(r<1?5:3)} ${b}`;}}
+  if(m=s.match(/([\d.]+)\s*(?:%|percent)\s*of\s*([\d.]+)/))return `${m[1]}% of ${m[2]} = ${+(m[1]*m[2]/100).toFixed(4)}`;
+  if(m=s.match(/square root of\s*([\d.]+)/))return `√${m[1]} = ${+Math.sqrt(+m[1]).toFixed(6)}`;
+  let e=s.replace(/what is|calculate|equals|=|\?/g,'').replace(/times|into|x|×/g,'*').replace(/divided by|by/g,'/').replace(/plus/g,'+').replace(/minus/g,'-').replace(/\^/g,'**').trim();
+  if(/^[\d\s.+\-*/()]+$/.test(e)&&/\d/.test(e)){try{const r=Function('"use strict";return ('+e+')')();if(isFinite(r))return `${e.replace(/\*\*/g,'^')} = ${+r.toFixed(8)}`;}catch(x){}}return null;}
+
+/* ================= INVENTION ENGINE ================= */
+const GATE=[
+ [/(go|travel|back|return).{0,20}(past|backward|back in time)|time travel to (the )?past|change the past|பின்னோக்கி/i,'imp','Travelling back to the past: no experiment has ever shown it, and it breaks cause-and-effect (the “grandfather paradox”). Some equations allow strange loops (wormholes), but they need “negative energy” in amounts nobody knows how to make. Today: truly impossible as far as physics knows.'],
+ [/perpetual|free energy|over.?unity|infinite energy|energy from nothing/i,'imp','A machine that gives more energy than it takes breaks the law of conservation of energy – checked in every experiment for 170+ years.'],
+ [/faster than light|ftl|warp drive/i,'imp','Nothing with mass can reach light speed – it would need infinite energy. (Warp-drive ideas need negative energy, which is not known to exist in usable amounts.)'],
+ [/teleport (a )?(human|person|man|myself|body)/i,'not','Quantum teleportation already moves the STATE of single particles (proven since 1997), but copying a human’s 10^28 atoms is far beyond any known technology – not yet possible.'],
+ [/time travel|future|time machine|எதிர்காலம்/i,'pos','Forward time travel is REAL: fast travel or strong gravity slows your clock (Einstein, 1905/1915). GPS satellite clocks must be corrected by about 38 microseconds a day for this. Use the calculator below to see how far into the future a fast trip takes you.'],
+ [/immortal|live forever|never die/i,'not','Ageing is slowed in animals in labs (some worms live 5× longer), but no method stops human ageing yet – not yet possible.'],
+ [/anti.?gravity|levitat/i,'not','Magnets and superconductors can levitate objects (maglev trains), but no way to cancel gravity itself is known.']];
+const TRIZ=[['Segmentation','Split it into independent parts or many small pieces.'],['Taking out','Take out only the needed part (or the disturbing part).'],['Local quality','Make each part work in its own best condition.'],['Asymmetry','Make a symmetric thing asymmetric.'],['Merging','Join identical or neighbouring operations in time or space.'],['Universality','Make one part do several jobs.'],['Nesting','Put one thing inside another (like Russian dolls).'],['Counterweight','Balance a weight using lift or another force.'],['Prior counter-action','Pre-stress it against the harm before it happens.'],['Prior action','Do the needed change in advance.'],['Cushion in advance','Prepare a backup for a weak point.'],['Equipotentiality','Remove the need to lift or lower.'],['The other way round','Invert the action – move the fixed part, fix the moving part.'],['Curvature','Replace straight lines with curves, use rotation.'],['Dynamics','Let it adjust itself to each situation.'],['Partial or excessive action','If 100% is hard, do a bit less or a bit more.'],['Another dimension','Move into 2D/3D, tilt it, use the other side.'],['Mechanical vibration','Use vibration or resonance.'],['Periodic action','Use pulses instead of a continuous action.'],['Continuity of useful action','Keep every part working all the time.'],['Skipping','Do the harmful step very fast.'],['Blessing in disguise','Turn harm into benefit.'],['Feedback','Measure and feed back to control it.'],['Intermediary','Use a go-between object or process.'],['Self-service','Make it serve and repair itself.'],['Copying','Use a cheap copy, image or model instead.'],['Cheap short-living objects','Replace one expensive thing by many cheap ones.'],['Replace mechanics','Use light, sound, fields or smell instead of moving parts.'],['Pneumatics and hydraulics','Use air or liquid.'],['Flexible shells and thin films','Use membranes and thin films.'],['Porous materials','Add holes or pores.'],['Colour changes','Change colour or transparency to see the invisible.'],['Homogeneity','Make interacting things of the same material.'],['Discarding and recovering','Let used parts disappear or come back.'],['Parameter changes','Change state, concentration, flexibility or temperature.'],['Phase transitions','Use what happens when solid/liquid/gas changes.'],['Thermal expansion','Use expansion with heat.'],['Strong oxidants','Use richer air or oxygen.'],['Inert atmosphere','Use a calm, non-reacting environment.'],['Composite materials','Combine different materials.']];
+function gate(p){for(const[re,v,why]of GATE)if(re.test(p))return{v,why};return{v:'unk',why:'No known law of nature forbids this – so it is not “truly impossible”. Treat it as not yet possible until you prove it.'};}
+const VL={imp:['v-imp','truly impossible (as far as physics knows)'],not:['v-not','not yet possible'],pos:['v-pos','possible – already real'],unk:['v-not','not yet possible – try it']};
+async function invent(p,out){const g=gate(p),sp=[];const pick=TRIZ.map((x,i)=>[x,Math.sin(i*97+p.length*13+Date.now()/8.64e7|0)]).sort((a,b)=>a[1]-b[1]).slice(0,3).map(a=>a[0]);
+  let h=`<div class="card"><b>${esc(p)}</b><br><span class="pill ${VL[g.v][0]}">${VL[g.v][1]}</span><p>${esc(g.why)}</p><b>Idea sparks (inventive principles):</b><ol>`+pick.map(([n,d])=>`<li><b>${n}</b> – ${d} <span class="mu">Ask: how would “${n.toLowerCase()}” change “${esc(p)}”?</span></li>`).join('')+'</ol>';
+  h+='<b>Your 8 steps:</b> <span class="mu">Gather facts → Feel the pain point → Doubt every belief → Disprove it with a test → Prove what survives → Act (small prototype) → Explain it simply → Learn from the failure map</span>';
+  const idea={id:uid(),p,v:g.v,sparks:pick.map(x=>x[0]),t:Date.now(),steps:[0,0,0,0,0,0,0,0],notes:''};
+  if(bigKey()||LOCAL.model){out.innerHTML=h+'<p class="mu">⚡ Big brain is thinking…</p></div>';const r=await big('Invention task. Problem or dream: "'+p+'".\nPhysics gate said: '+VL[g.v][1]+'.\nUsing the method Gather → Feel → Doubt → Disprove → Prove → Act → Explain → Learn, give: 1) what science really says (honest, cite real experiments), 2) the nearest REAL thing that is possible today, 3) three creative but testable invention ideas, 4) one cheap experiment he can do at home or with a phone this week. Simple words, short.',null,1400);
+    if(r&&r.text){idea.big=r.text;h+='<hr><b>⚡ Big brain:</b><div style="white-space:pre-wrap">'+esc(r.text)+'</div>';}else if(r)h+='<p class="bad">Big brain: '+esc(r.err)+'</p>';}
+  out.innerHTML=h+'</div>';S.ideas.unshift(idea);save();renderIdeas();return g;}
+function renderIdeas(){const st=['Gather','Feel','Doubt','Disprove','Prove','Act','Explain','Learn'];
+  $('ilist').innerHTML=S.ideas.length?S.ideas.map(d=>`<div class="it"><div style="flex:1"><b>${esc(d.p)}</b> <span class="pill ${VL[d.v][0]}">${VL[d.v][1]}</span><div class="row">${st.map((s,i)=>`<label class="mu"><input type="checkbox" data-id="${d.id}" data-s="${i}" ${d.steps[i]?'checked':''}> ${s}</label>`).join('')}</div>
+   <textarea data-n="${d.id}" placeholder="Notes, tests, what failed and why (your failure map)">${esc(d.notes||'')}</textarea></div><span class="x" data-del="${d.id}">✕</span></div>`).join(''):'<p class="mu">No ideas yet – think one above.</p>';}
+$('ilist').onchange=e=>{const id=e.target.dataset.id;if(id){const d=S.ideas.find(x=>x.id===id);d.steps[+e.target.dataset.s]=e.target.checked?1:0;save();}};
+$('ilist').oninput=e=>{const id=e.target.dataset.n;if(id){S.ideas.find(x=>x.id===id).notes=e.target.value;save();}};
+$('ilist').onclick=e=>{const id=e.target.dataset.del;if(id){const d=S.ideas.find(x=>x.id===id);if(d)toBin('idea',d.p,d);S.ideas=S.ideas.filter(x=>x.id!==id);save();renderIdeas();}};
+function dilation(pct,years){const b=Math.min(pct,99.99999999)/100,g=1/Math.sqrt(1-b*b);return{g,earth:years*g};}
+
+/* ================= TEACHER ================= */
+async function teach(topic,out){out.innerHTML='<p class="mu">Thinking…</p>';
+  if(bigKey()||LOCAL.model){const r=await big('Teach me: "'+topic+'". Format: first line a one-sentence answer. Then a short MOVIE SCENE that makes it unforgettable (characters, place, action). Then 4-6 key points for UPSC with exact facts (articles, years, numbers). Then end with one line: SVG: followed by ONE simple labelled diagram as inline SVG (viewBox 0 0 600 340, white background, dark text, max 12 shapes).',null,2200);
+    if(r&&r.text){const m=r.text.split(/SVG:\s*/i),svg=(m[1]||'').match(/<svg[\s\S]*<\/svg>/i);out.innerHTML='<div style="white-space:pre-wrap">'+esc(m[0].trim())+'</div>'+(svg?cleanSvg(svg[0]):'');speak(m[0].split('\n')[0]);
+      S.cards.push({id:uid(),q:'Explain: '+topic,a:m[0].split('\n')[0],due:Date.now()+864e5,iv:1,ef:2.5});save();cardDue();return m[0];}
+    if(r)out.innerHTML='<p class="bad">Big brain: '+esc(r.err)+'</p>';}
+  const d=tfidfSearch(topic,S.docs,x=>x.t,2),f=tfidfSearch(topic,S.facts,x=>x.t,2);let h='';
+  if(d.length)h+='<b>From your documents:</b>'+d.map(r=>'<p>📄 <i>'+esc(r.it.src)+'</i>: '+esc(r.it.t.slice(0,600))+'</p>').join('');
+  try{const tq=topic.replace(/^(please\s+)?(explain( like a movie)?|teach me( about)?|what is|tell me about|about|why is|how does)\s+/i,'').replace(/\?$/,'').trim();
+    const sr=await fetch('https://en.wikipedia.org/w/api.php?action=opensearch&format=json&origin=*&limit=1&search='+encodeURIComponent(tq));const sj=sr.ok?await sr.json():null,title=sj&&sj[1]&&sj[1][0]||tq;
+    const w=await fetch('https://en.wikipedia.org/api/rest_v1/page/summary/'+encodeURIComponent(title.replace(/ /g,'_')));if(w.ok){const j=await w.json();if(j.extract){h+='<b>Wikipedia says:</b><p>'+esc(j.extract)+'</p>';speak(j.extract.split('. ')[0]);
+     S.docs.push({id:uid(),src:'Wikipedia: '+j.title,t:j.extract});save();renderDocs();}}}catch(e){}
+  if(f.length)h+='<b>You told me:</b>'+f.map(r=>'<p>'+esc(r.it.t)+'</p>').join('');
+  out.innerHTML=h||'<p>I have nothing on this yet offline. Connect the internet (Wikipedia) or add the big brain key in ⚙ Brain, or give me a document about it.</p>';return h.replace(/<[^>]+>/g,' ').slice(0,300);}
+function cleanSvg(s){return s.replace(/<script[\s\S]*?<\/script>/gi,'').replace(/\son\w+="[^"]*"/gi,'').replace(/href="javascript:[^"]*"/gi,'');}
+async function quiz(topic,out){out.innerHTML='<p class="mu">Making questions…</p>';let qs=null;
+  if(bigKey()||LOCAL.model){const r=await big('Make 5 UPSC-prelims-style multiple choice questions on "'+topic+'". Reply ONLY with JSON: [{"q":"…","o":["…","…","…","…"],"a":0,"why":"…"}]. Facts must be correct.',null,1800);
+    if(r&&r.text){try{qs=JSON.parse(r.text.slice(r.text.indexOf('['),r.text.lastIndexOf(']')+1));}catch(e){}}}
+  if(!qs){let cs=topic?tfidfSearch(topic,S.cards,c=>c.q+' '+c.a,8).map(r=>r.it):[];if(cs.length<2)cs=S.cards.slice().sort(()=>Math.random()-.5);cs=cs.slice(0,5);if(cs.length<2){out.innerHTML='<p>Offline I make quizzes from your revision cards – add a few cards first (or add the big brain key).</p>';return;}
+    qs=cs.map(c=>{const wrong=S.cards.filter(x=>x!==c).sort(()=>Math.random()-.5).slice(0,3).map(x=>x.a),o=[c.a,...wrong].sort(()=>Math.random()-.5);return{q:c.q,o,a:o.indexOf(c.a),why:''};});}
+  let i=0,score=0;const show=()=>{if(i>=qs.length){out.innerHTML=`<h3>Score: ${score}/${qs.length}</h3>`;say(`You scored ${score} out of ${qs.length}.`);return;}const q=qs[i];
+    out.innerHTML=`<div class="q"><b>Q${i+1}. ${esc(q.q)}</b>`+q.o.map((o,k)=>`<button class="btn" data-k="${k}">${'ABCD'[k]}. ${esc(o)}</button>`).join('')+'</div>';
+    out.querySelectorAll('button').forEach(b=>b.onclick=()=>{const k=+b.dataset.k,ok=k===q.a;if(ok)score++;b.insertAdjacentHTML('beforeend',ok?' ✔':' ✘');
+      out.insertAdjacentHTML('beforeend',`<p class="${ok?'ok':'bad'}">${ok?'Correct!':'Answer: '+esc(q.o[q.a])}${q.why?' – '+esc(q.why):''}</p><button class="btn p" id="qn">Next</button>`);out.querySelectorAll('.q button').forEach(x=>x.disabled=true);$('qn').onclick=()=>{i++;show();};});};show();}
+function cardDue(){const n=S.cards.filter(c=>c.due<=Date.now()).length;$('cdue').textContent=n+' due now · '+S.cards.length+' cards';return n;}
+function revise(){const box=$('cbox'),due=S.cards.filter(c=>c.due<=Date.now());if(!due.length){box.innerHTML='<p class="mu">Nothing due – come back later. 🎉</p>';return;}const c=due[0];
+  box.innerHTML=`<div class="card"><b>${esc(c.q)}</b><div class="row"><button class="btn" id="cshow">Show answer</button></div><div id="cans"></div></div>`;
+  $('cshow').onclick=()=>{$('cans').innerHTML=`<p>${esc(c.a)}</p><div class="row">How well did you remember? <button class="btn" data-g="0">Forgot</button><button class="btn" data-g="3">Hard</button><button class="btn" data-g="4">Good</button><button class="btn p" data-g="5">Easy</button></div>`;
+    $('cans').querySelectorAll('button').forEach(b=>b.onclick=()=>{const g=+b.dataset.g;if(g<3)c.iv=1;else c.iv=c.iv<=1?(g===5?4:2):Math.round(c.iv*c.ef);c.ef=Math.max(1.3,c.ef+0.1-(5-g)*(0.08+(5-g)*0.02));c.due=Date.now()+(g<3?600e3:c.iv*864e5);save();cardDue();revise();});};}
+
+/* ================= APPS ================= */
+const APPS=[[/nsk|kml measure|tngis|tamil nilam|gi viewer/i,'https://tngis.tn.gov.in/apps/gi_viewer/','TN GI Viewer (your NSK KML Measure runs there)'],[/indian ?kanoon|kanoon|judgment|judgement/i,q=>'https://indiankanoon.org/search/?formInput='+encodeURIComponent(q),'Indian Kanoon search'],
+ [/youtube|song|music|video/i,q=>'https://www.youtube.com/results?search_query='+encodeURIComponent(q),'YouTube'],[/map|direction|route/i,q=>'https://www.google.com/maps/search/'+encodeURIComponent(q),'Google Maps'],
+ [/wikipedia|wiki/i,q=>'https://en.wikipedia.org/wiki/Special:Search?search='+encodeURIComponent(q),'Wikipedia'],[/upsc|syllabus/i,'https://upsc.gov.in/','UPSC website'],[/gazette|egazette/i,'https://egazette.gov.in/','e-Gazette of India'],
+ [/patta|chitta|eservices|land record/i,'https://eservices.tn.gov.in/','TN land records (Patta/Chitta)'],[/google|search/i,q=>'https://www.google.com/search?q='+encodeURIComponent(q),'Google search']];
+function openApp(q){const rest=q.replace(/^(please\s+)?(open|search|play|launch|start|show)\s+/i,'').replace(/\b(on|in)\s+(youtube|indian kanoon|kanoon|google maps|wikipedia|google)\b/i,'').trim();
+  for(const[re,u,name]of APPS)if(re.test(q)){const url=typeof u==='function'?u(rest.replace(re,'').trim()||rest):u;const w=window.open(url,'_blank');return w?'Opening '+name+'.':'Your browser blocked the new tab – tap here: '+url;}return null;}
+
+function understoodText(L){if(!L.T.length)return'';return'\n🌌 Understood: '+L.rep.map(x=>x.s+' —'+x.r+'→ '+x.o+(x.k==='new'?' (new concept)':x.k==='known'?' (already known – strengthened to '+x.w+')':x.k==='changed'?' (⚠ changed – earlier: '+x.was.join(', ')+')':'')).join('; ');}
+/* ================= MEMORY UI ================= */
+function remember(t,src){t=t.replace(/^.*?\b(remember|note|save|keep in mind)\s*(that|this|:)?\s*/i,'').replace(/^நினைவில் வை\s*/,'').trim();if(!t)return null;S.facts.unshift({id:uid(),t,src:src||'you',d:Date.now()});save();renderMem();return t;}
+function renderMem(){const q=$('msearch').value.trim(),L=q?tfidfSearch(q,S.facts,f=>f.t,50).map(r=>r.it):S.facts;
+  $('mlist').innerHTML=L.length?L.map(f=>`<div class="it"><span>${esc(f.t)} <span class="mu">· ${new Date(f.d).toLocaleDateString('en-IN')}</span></span><span class="x" data-id="${f.id}">✕</span></div>`).join(''):'<p class="mu">Nothing yet. Say “remember that …”.</p>';}
+$('mlist').onclick=e=>{const id=e.target.dataset.id;if(id){const f=S.facts.find(x=>x.id===id);if(f)toBin('note',f.t,f);S.facts=S.facts.filter(f=>f.id!==id);save();renderMem();}};
+function renderDocs(){const by={};S.docs.forEach(d=>by[d.src]=(by[d.src]||0)+1);$('dlist').innerHTML=Object.keys(by).map(s=>`<div class="it"><span>📄 ${esc(s)} <span class="mu">(${by[s]} pieces)</span></span><span class="x" data-src="${esc(s)}">✕</span></div>`).join('');}
+$('dlist').onclick=e=>{const s=e.target.dataset.src;if(s){toBin('doc','document '+s,S.docs.filter(d=>d.src===s));S.docs=S.docs.filter(d=>d.src!==s);save();renderDocs();}};
+$('docf').onchange=async e=>{for(const f of e.target.files){let t=await f.text();if(/\.(html?|kml)$/i.test(f.name))t=new DOMParser().parseFromString(t,'text/html').body.textContent||t;
+  t=t.replace(/\s+/g,' ').trim();if($('asrecipe').checked){const r=makeRecipe(f.name.replace(/\.[^.]+$/,''),t,f.name);if(r&&r.small)say(`📄 “${f.name}” is short (${r.raw} bytes) – a recipe would be ${r.size} bytes, bigger than the text, so I keep it whole. Knowing beats copying only for big things.`);if(r&&!r.small){say(`📜 I learnt “${r.title}” as a recipe: ${r.raw.toLocaleString()} bytes → ${r.size.toLocaleString()} bytes, with ${r.anchors.length} exact anchors (numbers, dates, names). Say “recreate ${r.title}” anytime.`);mindLearn(r.gist.join('. '));continue;}}
+  const parts=t.match(/.{1,900}(\s|$)/g)||[];parts.forEach(p=>S.docs.push({id:uid(),src:f.name,t:p.trim()}));say(`📄 I read “${f.name}” – ${parts.length} pieces. Ask me anything from it.`);}save();renderDocs();e.target.value='';};
+
+/* ================= TASKS UI ================= */
+function addTask(text,whenStr){const w=whenStr?parseWhen(whenStr):null;const t={id:uid(),text:text.trim(),when:w?w.toISOString():null,done:false,d:Date.now()};S.tasks.unshift(t);save();arm(t);renderTasks();
+  if(w&&'Notification'in window&&Notification.permission==='default')Notification.requestPermission();return t;}
+function renderTasks(){$('tlist').innerHTML=S.tasks.length?S.tasks.map(t=>`<div class="it"><input type="checkbox" data-id="${t.id}" ${t.done?'checked':''}><span class="${t.done?'done':''}">${esc(t.text)}${t.when?' <span class="pill">⏰ '+fmt(new Date(t.when))+'</span>':''}</span><span class="x" data-del="${t.id}">✕</span></div>`).join(''):'<p class="mu">No tasks. Say “add task …” or “remind me at 6 pm to …”.</p>';
+  $('glist').innerHTML=S.goals.map(g=>`<div class="it"><span>🎯 ${esc(g.t)}</span><span class="x" data-g="${g.id}">✕</span></div>`).join('');}
+$('tlist').onclick=e=>{const id=e.target.dataset.id,del=e.target.dataset.del;if(id){const t=S.tasks.find(x=>x.id===id);t.done=e.target.checked;save();renderTasks();}if(del){const t=S.tasks.find(x=>x.id===del);if(t)toBin('task',t.text,t);S.tasks=S.tasks.filter(x=>x.id!==del);save();renderTasks();}};
+$('glist').onclick=e=>{const id=e.target.dataset.g;if(id){S.goals=S.goals.filter(x=>x.id!==id);save();renderTasks();}};
+$('tadd').onclick=()=>{if($('tnew').value.trim()){addTask($('tnew').value,$('twhen').value);$('tnew').value='';$('twhen').value='';}};
+$('gadd').onclick=()=>{if($('gnew').value.trim()){S.goals.push({id:uid(),t:$('gnew').value.trim()});$('gnew').value='';save();renderTasks();}};
+
+/* ================= THE CORE: understand → act → answer ================= */
+async function handle(q,again){q=q.trim();if(!q)return;if(!again){addMsg('u',esc(q));S.chat.push({r:'u',t:q});}
+  PRECISE=isPrecise(q);const q0=q;if(/\b(it|its|there|him|her|he|she|they|them)\b/i.test(q)&&/^(where|when|what|who|which|how|tell|is|does)/i.test(q))q=resolveRefs(q);
+  if(/what did (we|i) (do|talk|discuss)|scenes? (of )?today|what happened (today|yesterday)|இன்று என்ன நடந்தது|நேற்று என்ன/i.test(q)){say(scenesText(/yesterday|நேற்று/i.test(q)?'yesterday':'today'),{tag:'🎬 scene memory'});return;}
+  {const ls=q.match(/^(?:please\s+)?learn this(?: story| text| movie| chapter)?\s*(?:called|named)?\s*([^:]{0,40}):\s*([\s\S]{40,})$/i);if(ls){const r=makeRecipe(ls[1].trim()||'story of '+new Date().toLocaleDateString('en-IN'),ls[2]);if(r&&r.small){remember(ls[2]);mindLearn(ls[2]);}say(r&&!r.small?`📜 Known, not copied: “${r.title}” kept as a recipe – ${r.raw} → ${r.size} bytes, ${r.anchors.length} exact anchors. Say “recreate ${r.title}”.`:r?`This is short (${r.raw} bytes) – a recipe would not save space, so I remembered it whole.`:'That was too short to learn.',{tag:'📜 know & create'});if(r&&!r.small)sceneTouch(r.title,'learnt recipe: '+r.title,q0);return;}}
+  if(/^(please\s+)?(recreate|retell|re-create|tell me the story of|tell me again)\b/i.test(q)){const r=findRecipe(q);if(!r){say('I have no recipe for that yet. Teach me with “learn this story: …” or load a document as a recipe.',{tag:'📜 know & create'});return;}const box=say('▶ Recreating “'+r.title+'” from its recipe…',{tag:'📜 know & create'});const div=document.createElement('div');box.appendChild(div);await recreate(r,div);stagePut('topic',r.title);return;}
+  if(/panchang|nakshatra|natchathiram|nakshathram|tithi|thithi|நட்சத்திரம்|திதி|பஞ்சாங்க|tamil month|today'?s star|amavasai|pournami/i.test(q)){say(panchText(new Date()),{tag:'🪔 panchangam'});return;}
+  {const ip=q.match(/^i predict (?:that )?(.+?)(?:\s+by\s+(\d{4}-\d{2}-\d{2}|tomorrow|next week))?$/i);if(ip){const due=ip[2]==='next week'?new Date(Date.now()+7*864e5).toISOString().slice(0,10):ip[2]&&ip[2]!=='tomorrow'?ip[2]:null;const pp=addPred(ip[1],'feeling',60,due);say('📝 Saved your prediction “'+pp.text+'” (source: your feeling, 60% sure) – I will ask you on '+pp.due+' whether it came true, and keep your feeling’s score.',{tag:'🔮 prediction'});return;}}
+  if(/weather|will it rain|rain tomorrow|forecast|மழை வருமா|வானிலை/i.test(q)){const box=say('🔬 Checking the forecast…',{tag:'🔮 prediction · physics'});const div=document.createElement('div');div.style.whiteSpace='pre-wrap';box.appendChild(div);const w=await weather(div);
+    const g=GEO.find(([re])=>re.test(q+' rain'));if(g)div.textContent+='\n\n'+g[1];if(w){const pp=addPred('Rain in '+S.place.name+' on '+w.day,'science',Math.max(1,Math.min(99,w.tomorrowRain)),w.day);div.textContent+='\n\n📝 Saved as a prediction ('+pp.conf+'% from physics) – I will check it with you after '+pp.due+'.';}return;}
+  if(/^(predict|prediction|forecast|will )/i.test(q)||/future|எதிர்காலம்|நடக்குமா/i.test(q)){const g=GEO.filter(([re])=>re.test(q)).map(x=>x[1]);let t=(g.length?g.join('\n')+'\n\n':'')+'How I predict: 🔬 measured science first, 🌍 geography and seasons, 📊 past records, 🧓 a guide, 🪔 tradition (labelled as belief), 💭 feeling – then I save the prediction and keep score. Say “I predict … by YYYY-MM-DD” to record one.';
+    if(bigKey()||LOCAL.model){const r=await big('Make an honest prediction for: "'+q+'". Rank evidence: measured science, geography/seasons (Tamil Nadu if relevant), historical base rates, expert guidance, then Tamil cultural tradition (clearly labelled as belief, not scientific). Give a probability % and what would change it. Short, simple words.',null,900);if(r&&r.text)t=r.text+'\n\n'+t;}
+    say(t,{tag:'🔮 prediction'});return;}
+  {const kn=q.match(/(?:kural|kuṟaḷ|குறள்)\s*(?:no\.?|number|எண்)?\s*(\d{1,4})/i);if(kn){say(kuralText(kn[1])||('குறள் '+kn[1]+' is not on this device yet – download the full Thirukkural in 🎓 Teacher.'),{tag:'📜 Thirukkural'});return;}
+   if(/today'?s kural|kural of the day|இன்றைய குறள்/i.test(q)){say(kuralText(kuralOfDay()),{tag:'📜 Thirukkural'});return;}
+   const ka=q.match(/(?:kural|குறள்)\s+(?:about|on|for|பற்றி)\s+(.+)/i);if(ka){const ns=kuralSearch(ka[1]);say(ns.length?ns.map(n=>kuralText(n)).join('\n\n'):'No kural matched that'+(S.kural?'':' among the '+kuralCount()+' built-in kurals – download the full 1,330 in 🎓 Teacher')+'.',{tag:'📜 Thirukkural'});return;}
+   const hh=HERITAGE.filter(([t])=>q.toLowerCase().includes(t.toLowerCase().split(' ')[0].replace(/[()]/g,''))||(/silap|chilap|சிலப்பதிகார/i.test(q)&&/Silap/.test(t))||(/big temple|brihad|பெரிய கோவில்/i.test(q)&&/Brihad/.test(t)));if(hh.length&&!/^(remember|teach me|explain)/i.test(q)){say(hh.map(([t,d,l])=>'🏛 '+t+' ['+l+']\n'+d).join('\n\n'),{tag:'📜 Tamil heritage'});return;}}
+  {const ph=q.match(/(?:play|sound|tone)\s+(\d{1,5}(?:\.\d+)?)\s*(?:hz|hertz)/i);if(ph){const f=+ph[1];soundPlay(f,'sine',0.12);say('🔊 Playing '+f+' Hz for 8 seconds.\n'+soundInfo(f),{tag:'🌊 waves'});return;}
+   const lc=q.match(/(\d{2,5})\s*(?:nm|nanomet)/i);if(lc){say('🌈 '+lightOf(+lc[1]).txt,{tag:'🌊 waves'});return;}
+   if(/what (frequency|pitch|note) (am i|is this)|listen to (my|this) (voice|sound)|hear (my|this) (voice|sound)/i.test(q)){tab('wave');micStart();say('👂 Listening in the 🌊 Waves tab – hum or whistle.',{tag:'🌊 waves'});return;}}
+  if(/breath(ing)? (exercise|practice|session)|vasi|pranayam|மூச்சு|relax me|calm me/i.test(q)){tab('wave');breathStart();say('🧘 Starting a 5-minute breath wave in 🌊 Waves – follow the light: in as it grows, out as it shrinks.',{tag:'🧘 vasi'});return;}
+  if(/siddhar|sidhar|சித்தர்|thirumanthiram|thirumoolar|sivavakkiyar|pambatti|pulippani/i.test(q)&&!/^(remember|teach me)/i.test(q)){const k=q.toLowerCase(),c=SIDDHA_CARDS.filter(([t])=>k.split(/\s+/).some(w=>w.length>4&&t.toLowerCase().includes(w.slice(0,6))));say((c.length?c:SIDDHA_CARDS.slice(0,3)).map(([t,d,l])=>'📜 '+t+' ['+l+']\n'+d).join('\n\n'),{tag:'📜 Siddhar'});return;}
+  if(/^(imagine|what if|கற்பனை)\b/i.test(q)){const im=imagine(q);say(im?im.text:'Teach me a few facts first – imagination recombines what I remember.',{tag:'✨ imagination'});if(im){stagePut('idea',im.a+' + '+im.b);sceneTouch(im.a,'imagined: '+im.a+' + '+im.b,q0);}return;}
+  let[intent,conf]=intentOf(q);if(intent!=='remember'&&intent!=='recall'&&/^(where|when|what|who|which|tell me about|எங்கே|எப்போது)|\?$/i.test(q)){const mr=mindAsk(q);if(mr&&mr.amp>0.1+0.35*D('careful')){intent='recall';conf=Math.max(conf,mr.amp);}}
+  const o={q,intent,tag:'🧬 '+intent+' · '+Math.round(conf*100)+'%'+(q!==q0?' · about “'+stageTopic()+'”':'')+(PRECISE?' · ⚖ careful edge (precise question)':'')};let r,ans;
+  try{switch(intent){
+   case'remember':{const t=remember(q);const L=t?mindLearn(t,/important|⭐|never forget/i.test(q)):{T:[]};renderMind();say(t?'✔ I will remember: “'+t+'”'+understoodText(L):'What should I remember?',o);break;}
+   case'recall':{const mr=mindAsk(q);if(mr&&mr.amp>0.05+0.35*D('careful')){say(mr.text+'\n(🌌 '+mr.how+' · signal '+Math.round(mr.amp*100)+'%)',Object.assign(o,{tag:o.tag+' · brain memory'}));break;}const hits=tfidfSearch(q,S.facts,f=>f.t,3);if(bigKey()||LOCAL.model){r=await big(q);if(r&&r.text){say(r.text,o);break;}}
+     if(hits.length)say(hits.map(h=>'• '+h.it.t).join('\n'),Object.assign(o,{tag:o.tag+' · from memory'}));else{const d=tfidfSearch(q,S.docs,x=>x.t,1);say(d.length?'From “'+d[0].it.src+'”: '+d[0].it.t.slice(0,400):'I don’t have that yet. Tell me with “remember that …”.',o);}break;}
+   case'task_add':{const w=parseWhen(q),text=q.replace(/^(please\s+)?(add\s+(a\s+)?task|add to my list|new task|todo|i need to|i have to)\s*:?\s*/i,'').replace(/\s*(at|by|in)\s+\d.*$/i,'')||q;const t=addTask(text,w?q:'');say('✔ Task added: '+t.text+(t.when?' (⏰ '+fmt(new Date(t.when))+')':''),o);break;}
+   case'task_list':{const open=S.tasks.filter(t=>!t.done);say(open.length?'You have '+open.length+' task(s):\n'+open.slice(0,10).map((t,i)=>(i+1)+'. '+t.text+(t.when?' – '+fmt(new Date(t.when)):'')).join('\n')+(cardDue()?'\nAnd '+cardDue()+' revision card(s) are due.':''):'No pending tasks. 🎉'+(S.goals.length?' Your goal: '+S.goals[0].t:''),o);break;}
+   case'remind':{const w=parseWhen(q);if(!w){say('When? Say for example “remind me at 6 pm to call amma” or “in 20 minutes”.',o);break;}
+     const text=q.replace(/^(please\s+)?(remind me|set (a )?reminder|alert me|wake me|நினைவூட்டு)\s*/i,'').replace(/\b(at|in|on|tomorrow)\b.*?(am|pm|minutes?|mins?|hours?|hrs?|seconds?|days?|மணிக்கு)\b\s*(to)?\s*/i,'').replace(/^to\s+/,'').replace(/\d{1,2}(?:[:.]\d{2})?\s*மணிக்கு\s*/,'').replace(/^(நாளை|இன்று)\s*/,'').trim()||'reminder';
+     const t=addTask(text,q);say('⏰ I will remind you: “'+t.text+'” on '+fmt(w)+'. (Keep this page open – phone browsers pause closed pages.)',o);break;}
+   case'teach':{const box=say('🎓 Teaching…',o);const div=document.createElement('div');box.appendChild(div);ans=await teach(q,div);break;}
+   case'quiz':{const box=say('📝 Quiz time!',o);const div=document.createElement('div');box.appendChild(div);await quiz(q.replace(/^(quiz me|test me|ask me questions|give me mcq)\s*(on|about)?\s*/i,''),div);break;}
+   case'revise':{tab('teach');revise();say(cardDue()?'Opening your due cards.':'Nothing is due right now.',o);break;}
+   case'open':{const m=openApp(q);say(m||'I know: NSK / TN GI Viewer, Indian Kanoon, YouTube, Google Maps, Wikipedia, UPSC, e-Gazette, Patta/Chitta, Google. Say for example “search kanoon land acquisition”.',o);break;}
+   case'invent':{const box=say('💡 Let me think about it with your 8 steps…',o);const div=document.createElement('div');box.appendChild(div);await invent(q.replace(/^(invent( a way to)?|give me a new idea for|idea (to|for)|discover)\s*/i,'')||q,div);break;}
+   case'calc':{const c=calc(q);if(c)say(c,o);else if((bigKey()||LOCAL.model)&&(r=await big(q))&&r.text)say(r.text,o);else say('I could not work that out – write it like “25 * 4” or “5 acres to cents”.',o);break;}
+   case'time':{const d=new Date();say((isTa(q)?'இப்போது ':'It is ')+d.toLocaleString('en-IN',{weekday:'long',day:'numeric',month:'long',year:'numeric',hour:'numeric',minute:'2-digit'})+'.',o);break;}
+   case'greet':{const h=new Date().getHours(),n=S.name?' '+S.name:'';const open=S.tasks.filter(t=>!t.done).length;
+     say((isTa(q)?'வணக்கம்'+n+'! ':(h<12?'Good morning':h<17?'Good afternoon':'Good evening')+n+'! ')+(open?'You have '+open+' task(s) pending. ':'')+(cardDue()?cardDue()+' revision card(s) are waiting. ':'')+'How can I help?',o);break;}
+   default:{if(bigKey()||LOCAL.model){r=await big(q);if(r&&r.text){say(r.text,o);break;}if(r){say('⚡ Big brain error: '+r.err+'. Answering with the small brain.',o);}}
+     const c=calc(q);if(c){say(c,o);break;}
+     if(/joke|சிரி/i.test(q)){const J=['Why did the surveyor bring a ladder? To reach the high-level benchmark!','My GPS and I broke up – it kept saying “recalculating” every time I made a choice.','A theodolite walked into a bar. The bartender said: “Why the long angle?”'];say(J[Math.floor(Math.random()*J.length)],o);break;}
+     if(/tired|bored|sad|motivat|lazy|சோர்வ/i.test(q)){const M=['Small steps every day beat big steps once a month. One topic, one revision card, one task – that is enough for today.','Even a river cuts rock not by power but by not stopping. Do 25 minutes now, then rest.','You already built an app that reads FMBs. A person who can do that can clear any exam – one chapter at a time.'];say(M[Math.floor(Math.random()*M.length)],o);break;}
+     const hits=tfidfSearch(q,S.facts.concat(S.docs.map(d=>({t:d.t,src:d.src}))),f=>f.t,1);
+     say(hits.length?'Here is what I know that matches:\n'+hits[0].it.t.slice(0,400):'I’m listening. My small brain can remember, plan, remind, teach from Wikipedia and your documents, quiz, open apps, calculate land units and think about inventions. For deep conversation, add the big brain key in ⚙ Brain.',o);}}
+  }catch(e){say('❌ '+e.message,o);}
+  try{const tri=understand(intent==='remember'?q.replace(/^.*?\b(remember|note|save|keep in mind)\s*(that|this|:)?\s*/i,''):q)[0],tp=nearSubj(q)||'',topic=tp||(intent==='remember'&&tri?tri[0]:'')||(intent==='teach'||intent==='quiz'||intent==='invent'?q.replace(/^(please\s+)?(teach me( about)?|explain|quiz me on|what is|tell me about|invent( a way to)?|is)\s*/i,'').replace(/\?$/,'').slice(0,40):'');
+    if(topic)stagePut('topic',topic);if(intent==='recall'&&tp){const f=MIND.facts.find(x=>x.s===tp&&!x.old);if(f)stagePut('fact',f.s+' '+f.r+' '+f.o);}
+    const chg=intent==='remember'&&tri?'learnt: '+tri.join(' '):intent==='task_add'||intent==='remind'?'task: '+q.replace(/^(please\s+)?(add\s+(a\s+)?task|remind me|new task|todo)\s*/i,'').slice(0,60):intent==='invent'?'idea: '+q.slice(0,60):intent==='teach'?'studied: '+topic:'';
+    sceneTouch(topic,chg,q0);}catch(e){}PRECISE=false;}
+
+/* ================= WIRING ================= */
+function tab(t){document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('on',b.dataset.t===t));document.querySelectorAll('main>section').forEach(s=>s.classList.toggle('on',s.id===t));}
+$('tabs').onclick=e=>{const t=e.target.dataset.t;if(t)tab(t);};
+$('send').onclick=()=>{const v=$('inp').value;$('inp').value='';handle(v);};$('inp').onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();$('send').click();}};
+$('mic').onclick=()=>{stopWake=listening;listen();};
+$('madd').onclick=()=>{const t=remember($('mnew').value);if(t){mindLearn(t);renderMind();$('mnew').value='';}};
+$('mteachb').onclick=()=>{const v=$('mteach').value.trim();if(!v)return;const L=mindLearn(v,/important|⭐/i.test(v));remember(v);$('mout').textContent=L.T.length?understoodText(L).trim():'I could not find a link in that sentence – try “X is Y”, “X is in Y”, “X likes Y”, “X has Y”.';$('mteach').value='';renderMind();};
+$('maskb').onclick=()=>{const r=mindAsk($('mask').value);$('mout').textContent=r?r.text+' (🌌 '+r.how+' · signal '+Math.round(r.amp*100)+'%)':'Nothing in my brain memory matches that yet.';renderMind();};
+$('dials').oninput=e=>{const k=e.target.dataset.dial;if(k){S.dials[k]=+e.target.value/100;save();e.target.parentNode.querySelector('.mu').textContent=e.target.value+'%';}};
+$('psrc').innerHTML=Object.entries(SRC).map(([k,v])=>`<option value="${k}">${v}</option>`).join('');$('pdate').value=new Date().toISOString().slice(0,10);$('pdue').value=new Date(Date.now()+864e5).toISOString().slice(0,10);
+const placeT=()=>{$('pplacet').textContent=S.place?'📍 '+S.place.name+' ('+S.place.lat.toFixed(3)+', '+S.place.lon.toFixed(3)+')':'No place set yet.';};
+$('pplaceb').onclick=async()=>{const n=$('pplace').value.trim();if(!n)return;try{const j=await (await fetch('https://geocoding-api.open-meteo.com/v1/search?count=1&name='+encodeURIComponent(n))).json();const r=j.results&&j.results[0];if(!r){$('pplacet').textContent='Place not found – try the nearest town.';return;}S.place={name:r.name+(r.admin1?', '+r.admin1:''),lat:r.latitude,lon:r.longitude};save();placeT();}catch(e){$('pplacet').textContent='Needs internet to look up a place.';}};
+$('pgeo').onclick=()=>{if(!navigator.geolocation){$('pplacet').textContent='Location not available here.';return;}navigator.geolocation.getCurrentPosition(p=>{S.place={name:'my location',lat:p.coords.latitude,lon:p.coords.longitude};save();placeT();},e=>{$('pplacet').textContent='Location refused: '+e.message;});};
+$('ppan').onclick=()=>{$('pout').textContent=panchText(new Date($('pdate').value+'T06:00:00'));};$('pwx').onclick=()=>weather($('pwxo'));
+$('padd').onclick=()=>{const t=$('ptext').value.trim();if(!t)return;addPred(t,$('psrc').value,$('pconf').value,$('pdue').value);$('ptext').value='';};
+$('plist').onclick=e=>{const id=e.target.dataset.pdel;if(id){const pp=S.preds.find(x=>x.id===id);if(pp)toBin('pred','prediction '+pp.text,pp);S.preds=S.preds.filter(x=>x.id!==id);save();renderPreds();}};placeT();
+$('kdl').onclick=()=>kuralDownload($('kout'));
+$('kfile').onchange=async e=>{const f=e.target.files[0];if(!f)return;const t=await f.text();let p;try{p=/\.json$/i.test(f.name)?parseKuralJSON(JSON.parse(t)):parseKuralHTML(t);}catch(x){$('kout').textContent='Could not read that file.';return;}const a=kuralAccept(p.arr,p.ch,f.name);$('kout').textContent=a.ok?'✅ Loaded '+a.got+' kurals from '+f.name+'.':'❌ '+a.why;e.target.value='';};
+$('kgo').onclick=()=>{const v=$('kq').value.trim();if(!v)return;$('kres').textContent=/^\d+$/.test(v)?(kuralText(v)||'Not on this device yet.'):(kuralSearch(v).map(n=>kuralText(n)).join('\n\n')||'No match.');};
+$('hcard').onclick=()=>{let n=0;HERITAGE.forEach(([t,d])=>{if(!S.cards.some(c=>c.q==='What is '+t+'?')){S.cards.push({id:uid(),q:'What is '+t+'?',a:d,due:Date.now(),iv:1,ef:2.5});n++;}});[[391,'Learning'],[423,'Judging truth'],[467,'Think before acting']].forEach(([k,w])=>{const q='Kural '+k+' ('+w+') – recite it';if(!S.cards.some(c=>c.q===q)){S.cards.push({id:uid(),q,a:kuralGet(k).join(' / '),due:Date.now(),iv:1,ef:2.5});n++;}});save();cardDue();$('kout').textContent='🃏 Added '+n+' revision cards.';};
+const wUpd=()=>{const f=+$('wfn').value||440;$('winfo').textContent=soundInfo(f,$('wbeat').checked?+$('wf2').value:0);drawWave();};
+$('wf').oninput=()=>{$('wfn').value=$('wf').value;wUpd();};$('wfn').oninput=()=>{$('wf').value=Math.min(2000,$('wfn').value);wUpd();};['wtype','wbeat','wf2'].forEach(id=>$(id).oninput=wUpd);
+$('wplay').onclick=()=>soundPlay(+$('wfn').value,$('wtype').value,$('wvol').value/100,$('wbeat').checked?+$('wf2').value:0);$('wstop').onclick=soundStop;
+document.querySelectorAll('[data-pre]').forEach(b=>b.onclick=()=>{const v=b.dataset.pre;if(v==='beat'){$('wfn').value=440;$('wf').value=440;$('wbeat').checked=true;$('wf2').value=444;}else{$('wfn').value=v;$('wf').value=v;$('wbeat').checked=false;}wUpd();$('wplay').click();});
+$('wmic').onclick=micStart;$('bgo').onclick=()=>BR.on?breathStop():breathStart();$('ngo').onclick=nadaStart;renderSiddha();$('lnm').oninput=drawLight;wUpd();drawLight();
+$('fgo').onclick=async()=>{const lg=$('flog');lg.textContent='';const log=t=>{lg.textContent+=t+'\n';lg.scrollTop=1e9;};$('fgo').disabled=true;mood='think';
+  const r=await evolve(+$('fgens').value,+$('fpop').value,log);mood='idle';$('fgo').disabled=false;const b=r.best,gain=b.fit-r.parent.fit;
+  if(b.how==='parent'||gain<=0.0001){log('🧘 No child beat the parent – I stay as I am (that is also a result).');return;}
+  b.parentFit=r.parent.fit;log(`🏆 Best child ${b.id}: ${(b.fit*100).toFixed(1)}% vs parent ${(r.parent.fit*100).toFixed(1)}% (+${(gain*100).toFixed(1)})`);
+  askPermission(`My child “${b.id}” (${b.how}) scored ${(b.fit*100).toFixed(1)}% on the exam, I score ${(r.parent.fit*100).toFixed(1)}%. Shall the child replace me? (You can go back anytime.)`,'adopt-child',()=>{adopt(b);log('✅ Adopted '+b.id+' – I am now generation '+S.genome.gen+'.');},()=>log('Kept the parent.'));tab('talk');};
+$('ftree').onclick=e=>{const i=e.target.dataset.rb;if(i!=null){rollback(+i);say('↩ Went back to an earlier DNA.',{tag:'🧬 family'});}};
+$('rlist').onclick=e=>{const rc=e.target.dataset.rc,rd=e.target.dataset.rdel;if(rc){const r=S.recipes.find(x=>x.id===rc);const o=document.querySelector('[data-ro="'+rc+'"]');if(r&&o)recreate(r,o);}if(rd){const r=S.recipes.find(x=>x.id===rd);if(r)toBin('recipe','recipe '+r.title,r);S.recipes=S.recipes.filter(x=>x.id!==rd);save();renderRecipes();}};
+$('cbin').onclick=e=>{const id=e.target.dataset.rest;if(id)restoreBin(id);};
+$('imgb').onclick=()=>{const im=imagine('imagine '+$('imgq').value);$('imgout').textContent=im?im.text:'Teach me a few facts first.';if(im)stagePut('idea',im.a+' + '+im.b);};
+$('msleep').onclick=()=>{const r=mindSleep();$('mout').textContent='😴 Slept: merged '+r.merged+' repeats, '+r.faded+' unused links faded'+(r.asked?', '+r.asked+' need your permission (see Talk)':'')+(r.dup?', '+r.dup+' duplicate notes removed (originals kept)':'')+'; web now has '+r.concepts+' connected concepts.';renderMind();};
+$('mfacts').onclick=e=>{const st=e.target.dataset.star,d=e.target.dataset.mdel;if(st!=null){const f=MIND.facts[+st];f.imp=!f.imp;if(f.imp)f.w=5;save();renderMind();}if(d!=null){const f=MIND.facts[+d];toBin('fact',f.s+' '+f.r+' '+f.o,f);MIND.facts.splice(+d,1);save();renderMind();}};$('msearch').oninput=renderMem;
+$('texp').onclick=()=>teach($('topic').value||'Article 21',$('tout'));$('tquiz').onclick=()=>quiz($('topic').value,$('tout'));
+$('cadd').onclick=()=>{if($('cq').value&&$('ca').value){S.cards.push({id:uid(),q:$('cq').value,a:$('ca').value,due:Date.now(),iv:1,ef:2.5});$('cq').value='';$('ca').value='';save();cardDue();}};
+$('crev').onclick=revise;$('igo').onclick=()=>{if($('iprob').value.trim())invent($('iprob').value.trim(),$('iout'));};
+$('tcalc').onclick=()=>{const v=+$('tv').value,y=+$('tt').value,d=dilation(v,y);$('tres').innerHTML=`<p>At <b>${v}%</b> of light speed, time on your ship runs <b>${d.g.toFixed(3)}×</b> slower. When <b>${y}</b> year(s) pass for you, <b>${d.earth.toFixed(3)}</b> years pass on Earth – you arrive <b>${(d.earth-y).toFixed(3)} years in Earth’s future</b>.</p><p class="mu">Real record: astronaut Sergei Krikalev, after 803 days in orbit, is about 0.02 seconds “younger” than if he had stayed on Earth.</p>`;};
+$('ksave').onclick=()=>{const k=$('key').value.trim();if(k)localStorage.setItem('nsk_arivu_key',k);localStorage.setItem('nsk_arivu_model',$('model').value);$('key').value='';bigStatus();say(k?'⚡ Big brain connected.':'Model saved.');};
+$('kdel').onclick=()=>{localStorage.removeItem('nsk_arivu_key');bigStatus();say('Big brain key removed from this browser.');};
+$('nretrain').onclick=()=>{train();};
+$('bexp').onclick=()=>{const b=new Blob([JSON.stringify(S)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='Chella_Kutty_brain_'+new Date().toISOString().slice(0,10)+'.json';a.click();};
+$('bimp').onchange=async e=>{try{const j=JSON.parse(await e.target.files[0].text());Object.assign(S,j);save();train();renderAll();say('🧠 Brain file loaded.');}catch(x){say('That is not a Chella Kutty brain file.');}};
+window.addEventListener('pagehide',()=>sceneClose());
+$('bwipe').onclick=()=>{if(confirm('Erase all memory, tasks, cards and ideas from this browser?')){localStorage.removeItem(KEY);location.reload();}};
+function renderAll(){renderFamily();renderTamil();renderPreds();renderDials();renderRecipes();renderCaution();renderMind();renderStage();renderScenes();renderTasks();renderMem();renderDocs();renderIdeas();cardDue();bigStatus();if(localStorage.getItem('nsk_arivu_model'))$('model').value=localStorage.getItem('nsk_arivu_model');S.tasks.forEach(arm);}
+if(Date.now()-(MIND.lastSleep||0)>864e5&&MIND.facts.length)setTimeout(()=>{mindSleep();renderMind();},4000);
+let idleT;document.addEventListener('pointerdown',()=>{clearTimeout(idleT);idleT=setTimeout(()=>{if(MIND.facts.length){mindSleep();renderMind();}},180000);});
+if(!MIND.migrated){S.facts.slice().reverse().forEach(f=>mindLearn(f.t));MIND.migrated=1;save();}
+setTimeout(askDue,2500);
+train();renderAll();if(localStorage.getItem("nsk_arivu_local"))setTimeout(()=>localLoad(),1500);
+if(!S.cards.length){[['Which Article protects life and personal liberty?','Article 21'],['Who presides over the Rajya Sabha?','The Vice-President of India'],['1 acre = how many cents?','100 cents (1 cent = 40.47 sq m)'],['Which Act replaced the Land Acquisition Act, 1894?','RFCTLARR Act, 2013 (Right to Fair Compensation…)'],['Forward time travel – real or not?','Real: fast motion and gravity slow clocks (GPS corrects ~38 µs/day)']].forEach(([q,a])=>S.cards.push({id:uid(),q,a,due:Date.now(),iv:1,ef:2.5}));save();cardDue();}
+setTimeout(()=>say(S.chat.length?'Welcome back. Say or type anything – “remind me at 6 pm…”, “teach me Article 21”, “is time travel possible?”.':'Vanakkam! I am Chella Kutty (செல்லக்குட்டி), your personal core brain. I can hear you (🎤), speak, remember your life, run tasks and reminders, teach UPSC with movie-scene stories, quiz you, open your apps and think about inventions. Try: “remember that my plot is 38 in Thanjavur”.',{tag:'🧬 core online'}),300);
+
+/* ===== phone app (PWA): offline cache + install button ===== */
+if('serviceWorker'in navigator&&/^https?:/.test(location.protocol))navigator.serviceWorker.register('sw.js').catch(()=>{});
+let deferredInstall=null;window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredInstall=e;$('install').style.display='inline-block';});
+$('install').onclick=async()=>{if(!deferredInstall)return;deferredInstall.prompt();await deferredInstall.userChoice;deferredInstall=null;$('install').style.display='none';};
+window.addEventListener('appinstalled',()=>say('📲 Installed! Open me from your home screen anytime – I work offline too.',{tag:'📲 phone app'}));
+</script>
+</body>
+</html>
